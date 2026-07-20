@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
         const subjectMatch = emailText.match(/^Subject: (.+)$/m)
         subject = subjectMatch?.[1] ?? `Guest Request — ${reqSummary}`
         body = emailText.replace(/^Subject: .+\n\n?/, "")
-      } catch {
+      } catch (e){
         const mock = buildMockEmail(guestMessage, reqSummary)
         subject = mock.subject
         body = mock.body

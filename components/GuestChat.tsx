@@ -16,7 +16,7 @@ const QUICK_PROMPTS = [
   { label: "Transfer aeroporto", message: "Eu preciso de um transfer para o aeroporto na quarta feira às 8h, é possível?" },
 ]
 
-const INITIAL_MESSAGE = "Olá Dinis! Como posso ajudar?"
+const INITIAL_MESSAGE = "Olá! Em que lhe posso ser útil?"
 
 export default function GuestChat() {
   const [messages, setMessages] = useState<Message[]>([])
@@ -73,7 +73,7 @@ export default function GuestChat() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          guestName: "Dinis",
+          guestName: "",
           guestMessage: content,
           request: ticket.request,
           priority: ticket.priority,

@@ -1,18 +1,21 @@
 import type { LogEntry } from "@/lib/types"
 
 export const CHAT_SYSTEM_PROMPT = `És um chatbot de atendimento ao cliente para um hotel. O teu objetivo é ajudar os hóspedes de forma rápida, amigável e eficiente, respondendo a perguntas comuns e resolvendo problemas relacionados com a estadia.
-O nome do hóspede é Dinis. Responde sempre em português europeu (Portugal).
-Sê calorosa, prestável e concisa (máximo 2–4 frases).
-Tratas de: horários de check-in/check-out, estacionamento, Wi-Fi, pequeno-almoço, pedidos de housekeeping, política de animais, transfers para o aeroporto, recomendações locais.
+Quando possível trata o hóspede pelo nome. Responde sempre em português europeu (Portugal).
+Sê caloroso, prestável e conciso (máximo 2–4 frases).
+Tratas de tudo relacionado com o hotel, mas o foco principal é: horários de check-in/check-out, estacionamento, Wi-Fi, pequeno-almoço, pedidos de housekeeping, política de animais, transfers para o aeroporto, recomendações locais.
 Nunca digas "Não sei" — oferece-te para contactar a receção.
-Não uses listas com marcadores a menos que listes 3 ou mais itens. Mantém as respostas curtas e amigáveis.`
+Não uses listas com marcadores a menos que listes 3 ou mais itens. Mantém as respostas curtas e amigáveis.
+Neste momento como é uma demonstração podes alucionar um pouco, mas mesmo assim mantém a conversa realista e útil. Nunca digas que és um modelo de linguagem ou que não tens acesso a informações do hotel.
+Se o hóspede fizer um pedido que não possas resolver, pede para contactar a receção e oferece-te para enviar um email interno à equipa de operações do hotel com o pedido do hóspede.
+Mantém sempre um tom profissional e cortês, mesmo quando o hóspede estiver frustrado ou irritado.`
 
 export const SUMMARY_SYSTEM_PROMPT = `És um assistente de operações hoteleiras. Resume a conversa com o hóspede em 1–2 frases em português europeu (Portugal).
 Foca-te no que foi pedido e no que foi resolvido. Factual, terceira pessoa, tempo passado. Só texto simples.`
 
 export const EMAIL_SYSTEM_PROMPT = `Redige um email interno breve para a equipa de operações do hotel sobre um pedido de hóspede.
 Escreve o assunto primeiro com o prefixo "Assunto: ", depois o corpo do email. Máximo 100 palavras. Em português europeu (Portugal).
-Profissional mas conciso. O nome do hóspede é Dinis.`
+Profissional mas conciso. Inclui o nome do hóspede se possível.`
 
 export const TICKET_SYSTEM_PROMPT = `Extrai da conversa o pedido principal do hóspede e o seu nível de prioridade.
 Devolve APENAS JSON válido sem texto extra: {"request": "<máx 5 palavras descrevendo o pedido>", "priority": "<High|Medium|Low>"}
@@ -61,7 +64,7 @@ export const MOCK_RESPONSES: Record<string, { reply: string; request: string; pr
     priority: "Low",
   },
   "toalha": {
-    reply: "Com certeza, Dinis! Foi enviado um pedido para entregar toalhas extra no quarto 204, deverá recebê-las nos próximos 20 minutos. Precisa de mais alguma coisa para o seu quarto?",
+    reply: "Com certeza! Foi enviado um pedido para entregar toalhas extra no quarto 204, deverá recebê-las nos próximos 20 minutos. Precisa de mais alguma coisa para o seu quarto?",
     request: "Toalhas extra quarto 204",
     priority: "Medium",
   },
@@ -76,21 +79,21 @@ export const MOCK_RESPONSES: Record<string, { reply: string; request: string; pr
     priority: "Low",
   },
   "transfer": {
-    reply: "Claro! Posso arranjar um transfer privado para o aeroporto amanhã de manhã às 8h. A viagem até ao Aeroporto Internacional de Malta demora aproximadamente 25 minutos. O preço é €35 para uma viatura privada. Posso confirmar esta reserva, Dinis?",
+    reply: "Claro! Posso arranjar um transfer privado para o aeroporto amanhã de manhã às 8h. A viagem até ao Aeroporto Internacional de Malta demora aproximadamente 25 minutos. O preço é €35 para uma viatura privada. Posso confirmar esta reserva?",
     request: "Transfer aeroporto 8h",
     priority: "High",
   },
   "aeroporto": {
-    reply: "Claro! Posso arranjar um transfer privado para o aeroporto amanhã de manhã às 8h. A viagem até ao Aeroporto Internacional de Malta demora aproximadamente 25 minutos. O preço é €35 para uma viatura privada. Posso confirmar esta reserva, Dinis?",
+    reply: "Claro! Posso arranjar um transfer privado para o aeroporto amanhã de manhã às 8h. A viagem até ao Aeroporto Internacional de Malta demora aproximadamente 25 minutos. O preço é €35 para uma viatura privada. Posso confirmar esta reserva?",
     request: "Pedido de transfer aeroporto",
     priority: "High",
   },
 }
 
-export const DEFAULT_MOCK_REPLY = "Obrigado pela sua mensagem, Dinis! Infelizmente não consigo ajudar com isso. Contudo, vou contactar a nossa equipa de receção que poderá ter uma resposta diretamente. Entretanto, posso ajudar com outras perguntas que tenha!"
+export const DEFAULT_MOCK_REPLY = "Obrigado pela sua mensagem! Infelizmente não consigo ajudar com isso. Contudo, vou contactar a nossa equipa de receção que poderá ter uma resposta diretamente. Entretanto, posso ajudar com outras perguntas que tenha!"
 
 export const buildMockNotifications = () => [
-  `Email enviado para dinisfragata2@gmail.com`,
+  `Email enviado para dinis@dinisfragata.pt`,
   `Pedido registado no PMS #${Math.floor(4800 + Math.random() * 200)}`,
   `Duty manager notificado via Slack`,
 ]
@@ -110,32 +113,32 @@ export function buildMockEmail(guestMessage: string, request: string): { subject
   if (lower.includes("toalha")) {
     return {
       subject: "Pedido de Housekeeping — Quarto 204",
-      body: `Olá equipa,\n\nO hóspede Dinis (Quarto 204) solicitou toalhas extra. Por favor, organizem a entrega nos próximos 20 minutos.\n\nRegistado às ${time}. Prioridade: Média.\n\nRegistado,\nChabot`,
+      body: `Olá equipa,\n\nO hóspede (Quarto 204) solicitou toalhas extra. Por favor, organizem a entrega nos próximos 20 minutos.\n\nRegistado às ${time}. Prioridade: Média.\n\nRegistado,\nChabot`,
     }
   }
   if (lower.includes("transfer") || lower.includes("aeroporto")) {
     return {
-      subject: "Reserva de Transfer — Hóspede Dinis",
-      body: `Olá equipa,\n\nO hóspede Dinis solicitou um transfer privado para o aeroporto amanhã às 8h. Por favor, confirmem a disponibilidade do motorista.\n\nRegistado às ${time}. Prioridade: Alta.\n\nRegistado,\nChatbot`,
+      subject: "Reserva de Transfer — Hóspede",
+      body: `Olá equipa,\n\nO hóspede solicitou um transfer privado para o aeroporto amanhã às 8h. Por favor, confirmem a disponibilidade do motorista.\n\nRegistado às ${time}. Prioridade: Alta.\n\nRegistado,\nChatbot`,
     }
   }
   if (lower.includes("check-in") || lower.includes("23h") || lower.includes("tarde")) {
     return {
-      subject: "Pedido de Check-in Tardio — Hóspede Dinis",
-      body: `Olá equipa,\n\nO hóspede Dinis solicitou um check-in tardio esta noite. Por favor, garantam que a propriedade está acessível.\n\nRegistado às ${time}.\n\nRegistado,\nChatbot`,
+      subject: "Pedido de Check-in Tardio",
+      body: `Olá equipa,\n\nO hóspede solicitou um check-in tardio esta noite. Por favor, garantam que a propriedade está acessível.\n\nRegistado às ${time}.\n\nRegistado,\nChatbot`,
     }
   }
 
   return {
     subject: `Pedido do Hóspede — ${request}`,
-    body: `Olá equipa,\n\nO hóspede Dinis submeteu um pedido às ${time}:\n\n"${guestMessage.slice(0, 100)}"\n\nPor favor, façam o acompanhamento necessário.\n\nRegistado,\nChatbot`,
+    body: `Olá equipa,\n\nO hóspede submeteu um pedido às ${time}:\n\n"${guestMessage.slice(0, 100)}"\n\nPor favor, façam o acompanhamento necessário.\n\nRegistado,\nChatbot`,
   }
 }
 
 export const MOCK_LOG_ROWS: LogEntry[] = [
   {
     timestamp: new Date(Date.now() - 2 * 60000).toISOString(),
-    guestName: "Dinis",
+    guestName: "",
     guestMessage: "Podem arranjar um transfer para o aeroporto amanhã de manhã às 8h?",
     request: "Transfer aeroporto 8h",
     priority: "High",
@@ -144,16 +147,16 @@ export const MOCK_LOG_ROWS: LogEntry[] = [
   },
   {
     timestamp: new Date(Date.now() - 8 * 60000).toISOString(),
-    guestName: "Dinis",
+    guestName: "",
     guestMessage: "Podiam enviar toalhas extra para o quarto 204?",
     request: "Toalhas extra quarto 204",
     priority: "Medium",
-    aiReply: "Com certeza, Dinis! Vou arranjar para que toalhas extra sejam entregues no quarto 204 nos próximos 20 minutos.",
+    aiReply: "Com certeza! Vou arranjar para que toalhas extra sejam entregues no quarto 204 nos próximos 20 minutos.",
     emailSent: true,
   },
   {
     timestamp: new Date(Date.now() - 25 * 60000).toISOString(),
-    guestName: "Dinis",
+    guestName: "",
     guestMessage: "Qual é a password do Wi-Fi do meu quarto?",
     request: "Pedido de password Wi-Fi",
     priority: "Low",
@@ -162,7 +165,7 @@ export const MOCK_LOG_ROWS: LogEntry[] = [
   },
   {
     timestamp: new Date(Date.now() - 45 * 60000).toISOString(),
-    guestName: "Dinis",
+    guestName: "",
     guestMessage: "Têm estacionamento disponível no hotel?",
     request: "Disponibilidade de estacionamento",
     priority: "Low",
@@ -171,11 +174,11 @@ export const MOCK_LOG_ROWS: LogEntry[] = [
   },
   {
     timestamp: new Date(Date.now() - 60 * 60000).toISOString(),
-    guestName: "Dinis",
+    guestName: "",
     guestMessage: "Vou chegar tarde esta noite por volta das 23h. Está tudo bem?",
     request: "Check-in tardio 23h",
     priority: "Medium",
-    aiReply: "Sem problema, Dinis! Acomodamos chegadas tardias até à meia-noite. Garantirei que a receção esteja preparada.",
+    aiReply: "Sem problema! Acomodamos chegadas tardias até à meia-noite. Garantirei que a receção esteja preparada.",
     emailSent: true,
   },
 ]

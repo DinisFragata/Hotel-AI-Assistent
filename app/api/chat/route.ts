@@ -16,7 +16,6 @@ export async function POST(request: NextRequest) {
     userMessage = message
 
     if (!hasApiKey) {
-      console.log(`[chat] mock | "${message.slice(0, 60)}"`)
       const mock = getMockResponse(message)
       await new Promise((r) => setTimeout(r, 800 + Math.random() * 600))
       return NextResponse.json({
@@ -24,8 +23,6 @@ export async function POST(request: NextRequest) {
         ticket: { request: mock.request, priority: mock.priority },
       })
     }
-
-    console.log(`[chat] OpenAI | "${message.slice(0, 60)}"`)
 
 
     const history = messages.map((m) => ({
