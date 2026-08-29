@@ -100,7 +100,7 @@ export default function GuestChat() {
             </div>
             <div>
               <div className="text-gray-900 text-sm font-semibold">Chatbot</div>
-              <div className="text-gray-400 text-[11px]">Demonstração</div>
+              <div className="text-gray-400 text-[11px]">Demonstração12</div>
             </div>
             <div className="ml-auto flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-emerald-400" />
