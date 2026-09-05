@@ -47,3 +47,5 @@ next-env.d.ts
 .devin
 CLAUDE.md
 AGENTS.md
+
+.history
