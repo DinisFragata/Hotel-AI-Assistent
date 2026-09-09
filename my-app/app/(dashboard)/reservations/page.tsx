@@ -1,14 +1,143 @@
 import { prisma } from "@/lib/prisma";
 import ReservationCreateDialog from "@/components/reservation-management/reservation-create-dialog";
 import ReservationEditDialog from "@/components/reservation-management/reservation-edit-dialog";
+import ReservationCancelDialog from "@/components/reservation-management/reservation-cancel-dialog";
+import ReservationStatusAction from "@/components/reservation-management/reservation-status-action";
+import ReservationSearch from "@/components/reservation-management/reservation-search";
+import ReservationStatusFilter from "@/components/reservation-management/reservation-status-filter";
+import ReservationDateFilter from "@/components/reservation-management/reservation-date-filter";
+import ReservationFilterProvider from "@/components/reservation-management/reservation-filter-provider";
+import ReservationResults from "@/components/reservation-management/reservation-results";
 
-export default async function ReservationsPage() {
+import ReservationCard from "@/components/reservation-management/reservation-card";
+import ReservationStatusBadge from "@/components/reservation-management/reservation-status-badge";
+
+import {
+  parseReservationDateFilter,
+  parseReservationStatus,
+} from "@/lib/reservations/filters";
+
+export default async function ReservationsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{
+    search?: string;
+    status?: string;
+    date?: string;
+  }>;
+}) {
+
+  const params = await searchParams;
+
+  const search = params.search?.trim() ?? "";
+
+  const selectedStatus = parseReservationStatus(params.status,);
+
+  const selectedDate = parseReservationDateFilter(params.date,);
+
+  const hasSearchFilter = Boolean(search);
+  const hasStatusFilter = Boolean(selectedStatus);
+  const hasDateFilter = Boolean(selectedDate);
+
+  const statusValue = selectedStatus ?? "ALL";
+  const dateValue = selectedDate ?? "ALL";
+
+  const activeFilterCount = [
+    hasSearchFilter,
+    hasStatusFilter,
+    hasDateFilter,
+  ].filter(Boolean).length;
+
+  const hasFilters = activeFilterCount > 0;
+
+  const now = new Date();
+
+  const todayStart = new Date(now);
+  todayStart.setHours(0, 0, 0, 0);
+
+  const tomorrowStart = new Date(todayStart);
+  tomorrowStart.setDate(tomorrowStart.getDate() + 1);
+
   const [reservations, guests, rooms] = await Promise.all([
     prisma.reservation.findMany({
+      where: {
+        ...(search
+          ? {
+              OR: [
+                {
+                  guest: {
+                    firstName: {
+                      contains: search,
+                      mode: "insensitive",
+                    },
+                  },
+                },
+                {
+                  guest: {
+                    lastName: {
+                      contains: search,
+                      mode: "insensitive",
+                    },
+                  },
+                },
+                {
+                  guest: {
+                    email: {
+                      contains: search,
+                      mode: "insensitive",
+                    },
+                  },
+                },
+                {
+                  room: {
+                    number: {
+                      contains: search,
+                      mode: "insensitive",
+                    },
+                  },
+                },
+              ],
+            }
+          : {}),
+
+        ...(selectedStatus
+          ? {
+              status: selectedStatus,
+            }
+          : {}),
+          ...(selectedDate === "UPCOMING"
+            ? {
+                checkIn: {
+                  gte: tomorrowStart,
+                },
+              }
+            : {}),
+
+          ...(selectedDate === "TODAY"
+            ? {
+                checkIn: {
+                  lt: tomorrowStart,
+                },
+                checkOut: {
+                  gt: todayStart,
+                },
+              }
+            : {}),
+
+          ...(selectedDate === "PAST"
+            ? {
+                checkOut: {
+                  lte: todayStart,
+                },
+              }
+            : {}),
+      },
+
       include: {
         guest: true,
         room: true,
       },
+
       orderBy: {
         checkIn: "asc",
       },
@@ -52,32 +181,21 @@ export default async function ReservationsPage() {
     pricePerNight: room.pricePerNight.toFixed(2),
   }));
 
-  const reservationEditRows = reservations.map((reservation) => ({
-    id: reservation.id,
-    guestId: reservation.guestId,
-    roomId: reservation.roomId,
-    checkIn: formatInputDate(reservation.checkIn),
-    checkOut: formatInputDate(reservation.checkOut),
-    guestsCount: reservation.guestsCount,
-    status: reservation.status,
-  }));
-
   return (
-    <section className="relative min-h-screen px-10 pb-10 pt-10">
+    <section className="relative min-h-screen px-4 pb-8 pt-6 sm:px-6 sm:pb-10 sm:pt-8 lg:px-10 lg:pt-10">
       <div className="mx-auto max-w-350">
-        <div className="mb-10 flex items-end justify-between gap-6">
+        <div className="mb-10 flex items-end justify-between gap-6 sm:mb-10">
           <div>
             <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">
               Property Management
             </p>
 
-            <h1 className="text-[42px] font-semibold tracking-[-0.04em]">
+            <h1 className="text-3xl font-semibold tracking-[-0.04em] sm:text-4xl lg:text-[42px]">
               Reservations
             </h1>
 
             <p className="mt-3 max-w-2xl text-base leading-[1.6] text-muted-foreground">
-              Manage guest reservations, booking dates and reservation
-              status.
+              Manage guest reservations, booking dates and reservation status.
             </p>
           </div>
 
@@ -87,8 +205,9 @@ export default async function ReservationsPage() {
           />
         </div>
 
+        <ReservationFilterProvider>
         <div className="glass-surface overflow-hidden rounded-3xl">
-          <div className="flex items-center justify-between border-b border-white/10 px-6 py-5">
+          <div className="flex flex-col gap-4 border-b border-white/10 px-6 py-5 md:flex-row md:items-center md:justify-between">
             <div>
               <h2 className="text-lg font-semibold">
                 Reservations
@@ -99,133 +218,225 @@ export default async function ReservationsPage() {
                 {reservationRows.length === 1
                   ? "reservation"
                   : "reservations"}{" "}
-                registered
+                {hasFilters
+                  ? "matching your filters"
+                  : "registered"}
               </p>
+            </div>
+
+            <div className="w-full md:w-auto">
+              <div className="flex w-full flex-col gap-3 md:flex-row md:items-center">
+                <div className="min-w-0 flex-1 md:w-72 md:flex-none">
+                  <ReservationSearch
+                    initialSearch={search}
+                  />
+                </div>
+
+                <div className="grid w-full grid-cols-2 gap-3 md:w-auto md:flex md:gap-3">
+                  <ReservationStatusFilter
+                    initialStatus={statusValue}
+                  />
+
+                  <ReservationDateFilter
+                    initialDate={dateValue}
+                  />
+                </div>
+              </div>
             </div>
           </div>
 
+          <ReservationResults>
           {reservationRows.length === 0 ? (
             <div className="flex min-h-60 items-center justify-center">
               <div className="max-w-sm text-center">
                 <h3 className="font-medium">
-                  No reservations yet
+                  {search
+                    ? "No matching reservations"
+                    : "No reservations yet"}
                 </h3>
 
                 <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                  Create your first reservation to start managing
-                  hotel bookings.
+                  {search
+                    ? `No reservations were found for the selected filters.`
+                    : "Create your first reservation to start managing hotel bookings."}
                 </p>
               </div>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-white/10">
-                    <th className="px-6 py-4 text-left text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-                      Guest
-                    </th>
+              <>
+                {/* Desktop table */}
+                <div className="hidden overflow-x-auto md:block">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-white/10">
+                        <th className="px-6 py-4 text-left text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                          Guest
+                        </th>
 
-                    <th className="px-4 py-4 text-left text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-                      Room
-                    </th>
+                        <th className="px-4 py-4 text-left text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                          Room
+                        </th>
 
-                    <th className="px-4 py-4 text-left text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-                      Check-in
-                    </th>
+                        <th className="px-4 py-4 text-left text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                          Check-in
+                        </th>
 
-                    <th className="px-4 py-4 text-left text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-                      Check-out
-                    </th>
+                        <th className="px-4 py-4 text-left text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                          Check-out
+                        </th>
 
-                    <th className="px-4 py-4 text-left text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-                      Guests
-                    </th>
+                        <th className="px-4 py-4 text-left text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                          Guests
+                        </th>
 
-                    <th className="px-4 py-4 text-left text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-                      Total
-                    </th>
+                        <th className="px-4 py-4 text-left text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                          Total
+                        </th>
 
-                    <th className="px-6 py-4 text-left text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-                      Status
-                    </th>
-                    <th className="w-32 px-6 py-4 text-right text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
+                        <th className="px-6 py-4 text-left text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                          Status
+                        </th>
 
-                <tbody>
+                        <th className="w-32 px-6 py-4 text-right text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                          Actions
+                        </th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      {reservationRows.map((reservation) => (
+                        <tr
+                          key={reservation.id}
+                          className="border-b border-white/10 last:border-0 transition-colors duration-150 hover:bg-white/1.5"
+                        >
+                          <td className="px-6 py-4">
+                            <div>
+                              <p className="font-medium leading-5">
+                                {reservation.guest.firstName}{" "}
+                                {reservation.guest.lastName}
+                              </p>
+
+                              {reservation.guest.email && (
+                                <p className="mt-0.5 truncate text-xs text-muted-foreground">
+                                  {reservation.guest.email}
+                                </p>
+                              )}
+                            </div>
+                          </td>
+
+                          <td className="px-4 py-4 font-medium">
+                            {reservation.room.number}
+                          </td>
+
+                          <td className="px-4 py-4 text-muted-foreground">
+                            {formatDate(reservation.checkIn)}
+                          </td>
+
+                          <td className="px-4 py-4 text-muted-foreground">
+                            {formatDate(reservation.checkOut)}
+                          </td>
+
+                          <td className="px-4 py-4 text-muted-foreground">
+                            {reservation.guestsCount}{" "}
+                            {reservation.guestsCount === 1
+                              ? "guest"
+                              : "guests"}
+                          </td>
+
+                          <td className="px-4 py-4 font-medium">
+                            €{reservation.totalPrice}
+                          </td>
+
+                          <td className="px-6 py-4">
+                            <ReservationStatusBadge
+                              status={reservation.status}
+                            />
+                          </td>
+
+                          <td className="px-6 py-4">
+                            <div className="flex justify-end gap-2">
+                              {reservation.status !== "CHECKED_OUT" && reservation.status !== "CANCELLED" && (
+                                <ReservationEditDialog
+                                  reservation={{
+                                    id: reservation.id,
+                                    guestId: reservation.guestId,
+                                    roomId: reservation.roomId,
+                                    checkIn: reservation.checkInInput,
+                                    checkOut: reservation.checkOutInput,
+                                    guestsCount: reservation.guestsCount,
+                                    status: reservation.status,
+                                  }}
+                                  guests={guestOptions}
+                                  rooms={roomOptions}
+                                />
+                              )}
+
+                              {reservation.status === "PENDING" && (
+                                <>
+                                  <ReservationStatusAction
+                                    reservationId={reservation.id}
+                                    targetStatus="CONFIRMED"
+                                  />
+
+                                  <ReservationCancelDialog
+                                    reservationId={reservation.id}
+                                    guestName={`${reservation.guest.firstName} ${reservation.guest.lastName}`}
+                                    roomNumber={reservation.room.number}
+                                    checkIn={reservation.checkInInput}
+                                    checkOut={reservation.checkOutInput}
+                                    totalPrice={reservation.totalPrice}
+                                  />
+                                </>
+                              )}
+
+                              {reservation.status === "CONFIRMED" && (
+                                <>
+                                  <ReservationStatusAction
+                                    reservationId={reservation.id}
+                                    targetStatus="CHECKED_IN"
+                                  />
+
+                                  <ReservationCancelDialog
+                                    reservationId={reservation.id}
+                                    guestName={`${reservation.guest.firstName} ${reservation.guest.lastName}`}
+                                    roomNumber={reservation.room.number}
+                                    checkIn={reservation.checkInInput}
+                                    checkOut={reservation.checkOutInput}
+                                    totalPrice={reservation.totalPrice}
+                                  />
+                                </>
+                              )}
+
+                              {reservation.status === "CHECKED_IN" && (
+                                <ReservationStatusAction
+                                  reservationId={reservation.id}
+                                  targetStatus="CHECKED_OUT"
+                                />
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Mobile cards */}
+                <div className="space-y-3 p-4 md:hidden">
                   {reservationRows.map((reservation) => (
-                    <tr
+                    <ReservationCard
                       key={reservation.id}
-                      className="border-b border-white/10 last:border-0"
-                    >
-                      <td className="px-6 py-4">
-                        <div>
-                          <p className="font-medium">
-                            {reservation.guest.firstName}{" "}
-                            {reservation.guest.lastName}
-                          </p>
-
-                          {reservation.guest.email && (
-                            <p className="mt-1 text-xs text-muted-foreground">
-                              {reservation.guest.email}
-                            </p>
-                          )}
-                        </div>
-                      </td>
-
-                      <td className="px-4 py-4 font-medium">
-                        {reservation.room.number}
-                      </td>
-
-                      <td className="px-4 py-4 text-muted-foreground">
-                        {formatDate(reservation.checkIn)}
-                      </td>
-
-                      <td className="px-4 py-4 text-muted-foreground">
-                        {formatDate(reservation.checkOut)}
-                      </td>
-
-                      <td className="px-4 py-4 text-muted-foreground">
-                        {reservation.guestsCount}{" "}
-                        {reservation.guestsCount === 1
-                          ? "guest"
-                          : "guests"}
-                      </td>
-
-                      <td className="px-4 py-4 font-medium">
-                        €{reservation.totalPrice}
-                      </td>
-
-                      <td className="px-6 py-4">
-                        <StatusBadge status={reservation.status} />
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex justify-end">
-                          <ReservationEditDialog
-                            reservation={{
-                              id: reservation.id,
-                              guestId: reservation.guestId,
-                              roomId: reservation.roomId,
-                              checkIn: reservation.checkInInput,
-                              checkOut: reservation.checkOutInput,
-                              guestsCount: reservation.guestsCount,
-                              status: reservation.status,
-                            }}
-                            guests={guestOptions}
-                            rooms={roomOptions}
-                          />
-                        </div>
-                      </td>
-                    </tr>
+                      reservation={reservation}
+                      guests={guestOptions}
+                      rooms={roomOptions}
+                    />
                   ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+                </div>
+              </>
+            )}
+          </ReservationResults>
         </div>
+        </ReservationFilterProvider>
       </div>
     </section>
   );
@@ -241,73 +452,4 @@ function formatDate(date: Date) {
 
 function formatInputDate(date: Date) {
   return date.toISOString().slice(0, 10);
-}
-
-function StatusBadge({
-  status,
-}: {
-  status:
-    | "PENDING"
-    | "CONFIRMED"
-    | "CHECKED_IN"
-    | "CHECKED_OUT"
-    | "CANCELLED";
-}) {
-  const config = {
-    PENDING: {
-      label: "Pending",
-      dot: "bg-yellow-300",
-      className:
-        "border-yellow-300/20 bg-yellow-300/8 text-yellow-300",
-    },
-
-    CONFIRMED: {
-      label: "Confirmed",
-      dot: "bg-primary",
-      className:
-        "border-primary/20 bg-primary/8 text-primary",
-    },
-
-    CHECKED_IN: {
-      label: "Checked In",
-      dot: "bg-secondary",
-      className:
-        "border-secondary/20 bg-secondary/8 text-secondary",
-    },
-
-    CHECKED_OUT: {
-      label: "Checked Out",
-      dot: "bg-muted-foreground",
-      className:
-        "border-muted-foreground/20 bg-muted/40 text-muted-foreground",
-    },
-
-    CANCELLED: {
-      label: "Cancelled",
-      dot: "bg-destructive",
-      className:
-        "border-destructive/20 bg-destructive/8 text-destructive",
-    },
-  };
-
-  const current = config[status];
-
-  return (
-    <span
-      className={[
-        "inline-flex items-center gap-2 rounded-full border px-3 py-1.5",
-        "text-[11px] font-semibold tracking-wide",
-        current.className,
-      ].join(" ")}
-    >
-      <span
-        className={[
-          "h-1.5 w-1.5 rounded-full",
-          current.dot,
-        ].join(" ")}
-      />
-
-      {current.label}
-    </span>
-  );
 }

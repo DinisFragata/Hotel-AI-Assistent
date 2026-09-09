@@ -22,13 +22,14 @@ export default function DashboardLayout({
 
       <AppSidebar />
 
-      <div className="pl-72">
-        <header className="fixed left-72 right-0 top-0 z-40 flex h-24 items-center justify-between border-b border-white/10 bg-background/80 px-10 backdrop-blur-xl">
-          <div className="text-[23px] font-semibold leading-[1.3] tracking-[-0.015em]">
+      <div className="md:pl-72">
+        <header className="fixed left-0 right-0 top-0 z-40 flex h-20 items-center justify-end border-b border-white/10 bg-background/80 px-4 backdrop-blur-xl md:left-72 md:h-24 md:px-10">
+          <div className="text-right text-sm font-semibold leading-[1.3] tracking-[-0.015em] sm:text-base md:text-[23px]">
             {formattedDate}
           </div>
         </header>
-        <div className="relative pt-24">
+
+        <div className="relative pt-20 md:pt-24">
           {children}
         </div>
       </div>
