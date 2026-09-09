@@ -2,54 +2,22 @@
 
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
-import { z } from "zod";
 
-const createReservationSchema = z
-  .object({
-    guestId: z
-      .string()
-      .trim()
-      .min(1, "Guest is required."),
+import {
+  createReservationSchema,
+  updateReservationSchema,
+} from "@/lib/reservations/schemas";
 
-    roomId: z
-      .string()
-      .trim()
-      .min(1, "Room is required."),
+import {
+  isValidReservationStatusTransition,
+  type ReservationStatus,
+} from "@/lib/reservations/status";
 
-    checkIn: z
-      .string()
-      .trim()
-      .regex(/^\d{4}-\d{2}-\d{2}$/, "Check-in date is invalid."),
-
-    checkOut: z
-      .string()
-      .trim()
-      .regex(/^\d{4}-\d{2}-\d{2}$/, "Check-out date is invalid."),
-
-    guestsCount: z
-      .string()
-      .trim()
-      .refine(
-        (value) =>
-          Number.isInteger(Number(value)) &&
-          Number(value) > 0,
-        {
-          message:
-            "Number of guests must be a positive whole number.",
-        },
-      ),
-
-    status: z.enum(["PENDING", "CONFIRMED"]),
-  })
-  .superRefine((data, context) => {
-    if (data.checkOut <= data.checkIn) {
-      context.addIssue({
-        code: "custom",
-        path: ["checkOut"],
-        message: "Check-out must be after check-in.",
-      });
-    }
-  });
+import {
+  calculateReservationNights,
+  findReservationConflict,
+  isRoomCapacityExceeded,
+} from "@/lib/reservations/validation";
 
 export type CreateReservationState = {
   success: boolean;
@@ -78,6 +46,16 @@ export type UpdateReservationState = {
   };
 };
 
+export type CancelReservationState = {
+  success: boolean;
+  message: string;
+};
+
+export type UpdateReservationStatusState = {
+  success: boolean;
+  message: string;
+};
+
 export async function createReservation(
   _previousState: CreateReservationState,
   formData: FormData,
@@ -91,13 +69,15 @@ export async function createReservation(
     status: formData.get("status"),
   };
 
-  const parsed = createReservationSchema.safeParse(rawData);
+  const parsed =
+    createReservationSchema.safeParse(rawData);
 
   if (!parsed.success) {
     return {
       success: false,
       message: "Please correct the highlighted fields.",
-      fieldErrors: parsed.error.flatten().fieldErrors,
+      fieldErrors:
+        parsed.error.flatten().fieldErrors,
     };
   }
 
@@ -123,7 +103,9 @@ export async function createReservation(
         success: false,
         message: "Guest not found.",
         fieldErrors: {
-          guestId: ["The selected guest could not be found."],
+          guestId: [
+            "The selected guest could not be found.",
+          ],
         },
       };
     }
@@ -133,7 +115,9 @@ export async function createReservation(
         success: false,
         message: "Room not found.",
         fieldErrors: {
-          roomId: ["The selected room could not be found."],
+          roomId: [
+            "The selected room could not be found.",
+          ],
         },
       };
     }
@@ -146,11 +130,9 @@ export async function createReservation(
       `${data.checkOut}T00:00:00.000Z`,
     );
 
-    const millisecondsPerDay = 1000 * 60 * 60 * 24;
-
-    const nights = Math.round(
-      (checkOut.getTime() - checkIn.getTime()) /
-        millisecondsPerDay,
+    const nights = calculateReservationNights(
+      checkIn,
+      checkOut,
     );
 
     if (nights <= 0) {
@@ -165,30 +147,37 @@ export async function createReservation(
       };
     }
 
-    const conflictingReservation =
-      await prisma.reservation.findFirst({
-        where: {
-          roomId: room.id,
+    const guestsCount = Number(data.guestsCount);
 
-          status: {
-            not: "CANCELLED",
-          },
-
-          checkIn: {
-            lt: checkOut,
-          },
-
-          checkOut: {
-            gt: checkIn,
-          },
+    if (
+      isRoomCapacityExceeded(
+        room.capacity,
+        guestsCount,
+      )
+    ) {
+      return {
+        success: false,
+        message:
+          "The selected room cannot accommodate that many guests.",
+        fieldErrors: {
+          guestsCount: [
+            `This room can accommodate a maximum of ${room.capacity} guests.`,
+          ],
         },
+      };
+    }
+
+    const conflictingReservation =
+      await findReservationConflict({
+        roomId: room.id,
+        checkIn,
+        checkOut,
       });
 
     if (conflictingReservation) {
       return {
         success: false,
-        message:
-          "This room is already reserved for the selected dates.",
+        message: `Room ${room.number} is already reserved for the selected dates.`,
         fieldErrors: {
           roomId: [
             "This room is not available for the selected dates.",
@@ -197,7 +186,8 @@ export async function createReservation(
       };
     }
 
-    const totalPrice = room.pricePerNight.mul(nights);
+    const totalPrice =
+      room.pricePerNight.mul(nights);
 
     await prisma.reservation.create({
       data: {
@@ -205,7 +195,7 @@ export async function createReservation(
         roomId: room.id,
         checkIn,
         checkOut,
-        guestsCount: Number(data.guestsCount),
+        guestsCount,
         status: data.status,
         totalPrice,
       },
@@ -231,65 +221,7 @@ export async function createReservation(
   }
 }
 
-const updateReservationSchema = z
-  .object({
-    id: z
-      .string()
-      .trim()
-      .min(1, "Reservation ID is required."),
-
-    guestId: z
-      .string()
-      .trim()
-      .min(1, "Guest is required."),
-
-    roomId: z
-      .string()
-      .trim()
-      .min(1, "Room is required."),
-
-    checkIn: z
-      .string()
-      .trim()
-      .regex(/^\d{4}-\d{2}-\d{2}$/, "Check-in date is invalid."),
-
-    checkOut: z
-      .string()
-      .trim()
-      .regex(/^\d{4}-\d{2}-\d{2}$/, "Check-out date is invalid."),
-
-    guestsCount: z
-      .string()
-      .trim()
-      .refine(
-        (value) =>
-          Number.isInteger(Number(value)) &&
-          Number(value) > 0,
-        {
-          message:
-            "Number of guests must be a positive whole number.",
-        },
-      ),
-
-    status: z.enum([
-      "PENDING",
-      "CONFIRMED",
-      "CHECKED_IN",
-      "CHECKED_OUT",
-      "CANCELLED",
-    ]),
-  })
-  .superRefine((data, context) => {
-    if (data.checkOut <= data.checkIn) {
-      context.addIssue({
-        code: "custom",
-        path: ["checkOut"],
-        message: "Check-out must be after check-in.",
-      });
-    }
-  });
-
-  export async function updateReservation(
+export async function updateReservation(
   _previousState: UpdateReservationState,
   formData: FormData,
 ): Promise<UpdateReservationState> {
@@ -303,29 +235,50 @@ const updateReservationSchema = z
     status: formData.get("status"),
   };
 
-  const parsed = updateReservationSchema.safeParse(rawData);
+  const parsed =
+    updateReservationSchema.safeParse(rawData);
 
   if (!parsed.success) {
     return {
       success: false,
       message: "Please correct the highlighted fields.",
-      fieldErrors: parsed.error.flatten().fieldErrors,
+      fieldErrors:
+        parsed.error.flatten().fieldErrors,
     };
   }
 
   const data = parsed.data;
 
   try {
-    const reservation = await prisma.reservation.findUnique({
-      where: {
-        id: data.id,
-      },
-    });
+    const reservation =
+      await prisma.reservation.findUnique({
+        where: {
+          id: data.id,
+        },
+      });
 
     if (!reservation) {
       return {
         success: false,
         message: "Reservation not found.",
+      };
+    }
+
+    const isValidTransition =
+      isValidReservationStatusTransition(
+        reservation.status,
+        data.status as ReservationStatus,
+      );
+
+    if (!isValidTransition) {
+      return {
+        success: false,
+        message: "This reservation cannot be moved directly from Pending to Checked In.",
+        fieldErrors: {
+          status: [
+            "This status transition is not allowed.",
+          ],
+        },
       };
     }
 
@@ -375,12 +328,9 @@ const updateReservationSchema = z
       `${data.checkOut}T00:00:00.000Z`,
     );
 
-    const millisecondsPerDay =
-      1000 * 60 * 60 * 24;
-
-    const nights = Math.round(
-      (checkOut.getTime() - checkIn.getTime()) /
-        millisecondsPerDay,
+    const nights = calculateReservationNights(
+      checkIn,
+      checkOut,
     );
 
     if (nights <= 0) {
@@ -395,34 +345,38 @@ const updateReservationSchema = z
       };
     }
 
-    const conflictingReservation =
-      await prisma.reservation.findFirst({
-        where: {
-          id: {
-            not: reservation.id,
-          },
+    const guestsCount = Number(data.guestsCount);
 
-          roomId: room.id,
-
-          status: {
-            not: "CANCELLED",
-          },
-
-          checkIn: {
-            lt: checkOut,
-          },
-
-          checkOut: {
-            gt: checkIn,
-          },
+    if (
+      isRoomCapacityExceeded(
+        room.capacity,
+        guestsCount,
+      )
+    ) {
+      return {
+        success: false,
+        message:
+          "The selected room cannot accommodate that many guests.",
+        fieldErrors: {
+          guestsCount: [
+            `This room can accommodate a maximum of ${room.capacity} guests.`,
+          ],
         },
+      };
+    }
+
+    const conflictingReservation =
+      await findReservationConflict({
+        roomId: room.id,
+        checkIn,
+        checkOut,
+        excludeReservationId: reservation.id,
       });
 
     if (conflictingReservation) {
       return {
         success: false,
-        message:
-          "This room is already reserved for the selected dates.",
+        message: `Room ${room.number} is already reserved for the selected dates.`,
         fieldErrors: {
           roomId: [
             "This room is not available for the selected dates.",
@@ -431,7 +385,8 @@ const updateReservationSchema = z
       };
     }
 
-    const totalPrice = room.pricePerNight.mul(nights);
+    const totalPrice =
+      room.pricePerNight.mul(nights);
 
     await prisma.reservation.update({
       where: {
@@ -443,7 +398,7 @@ const updateReservationSchema = z
         roomId: room.id,
         checkIn,
         checkOut,
-        guestsCount: Number(data.guestsCount),
+        guestsCount,
         status: data.status,
         totalPrice,
       },
@@ -466,6 +421,171 @@ const updateReservationSchema = z
       success: false,
       message:
         "Something went wrong while updating the reservation.",
+    };
+  }
+}
+
+export async function cancelReservation(
+  _previousState: CancelReservationState,
+  formData: FormData,
+): Promise<CancelReservationState> {
+  const reservationId = formData.get("id");
+
+  if (
+    typeof reservationId !== "string" ||
+    !reservationId.trim()
+  ) {
+    return {
+      success: false,
+      message: "Reservation ID is required.",
+    };
+  }
+
+  try {
+    const reservation =
+      await prisma.reservation.findUnique({
+        where: {
+          id: reservationId,
+        },
+      });
+
+    if (!reservation) {
+      return {
+        success: false,
+        message: "Reservation not found.",
+      };
+    }
+
+    const isValidTransition =
+      isValidReservationStatusTransition(
+        reservation.status,
+        "CANCELLED",
+      );
+
+    if (!isValidTransition) {
+      return {
+        success: false,
+        message: "This reservation cannot be cancelled.",
+      };
+    }
+
+    await prisma.reservation.update({
+      where: {
+        id: reservation.id,
+      },
+      data: {
+        status: "CANCELLED",
+      },
+    });
+
+    revalidatePath("/reservations");
+
+    return {
+      success: true,
+      message:
+        "Reservation was cancelled successfully.",
+    };
+  } catch (error) {
+    console.error(
+      "Failed to cancel reservation:",
+      error,
+    );
+
+    return {
+      success: false,
+      message:
+        "Something went wrong while cancelling the reservation.",
+    };
+  }
+}
+
+export async function updateReservationStatus(
+  _previousState: UpdateReservationStatusState,
+  formData: FormData,
+): Promise<UpdateReservationStatusState> {
+  const reservationId = formData.get("id");
+  const nextStatus = formData.get("status");
+
+  if (
+    typeof reservationId !== "string" ||
+    !reservationId.trim()
+  ) {
+    return {
+      success: false,
+      message: "Reservation ID is required.",
+    };
+  }
+
+  if (
+    typeof nextStatus !== "string" ||
+    ![
+      "PENDING",
+      "CONFIRMED",
+      "CHECKED_IN",
+      "CHECKED_OUT",
+      "CANCELLED",
+    ].includes(nextStatus)
+  ) {
+    return {
+      success: false,
+      message: "Invalid reservation status.",
+    };
+  }
+
+  try {
+    const reservation =
+      await prisma.reservation.findUnique({
+        where: {
+          id: reservationId,
+        },
+      });
+
+    if (!reservation) {
+      return {
+        success: false,
+        message: "Reservation not found.",
+      };
+    }
+
+    const isValidTransition =
+      isValidReservationStatusTransition(
+        reservation.status,
+        nextStatus as ReservationStatus,
+      );
+
+    if (!isValidTransition) {
+      return {
+        success: false,
+        message: `Reservation cannot change from ${reservation.status} to ${nextStatus}.`,
+      };
+    }
+
+    await prisma.reservation.update({
+      where: {
+        id: reservation.id,
+      },
+      data: {
+        status: nextStatus as ReservationStatus,
+      },
+    });
+
+    revalidatePath("/reservations");
+
+    return {
+      success: true,
+      message:
+        "Reservation status was updated successfully.",
+    };
+  } catch (error) {
+    console.error(
+      "Failed to update reservation status:",
+      error,
+    );
+
+    return {
+      success: false,
+      message:
+        "Something went wrong while updating the reservation status.",
     };
   }
 }
