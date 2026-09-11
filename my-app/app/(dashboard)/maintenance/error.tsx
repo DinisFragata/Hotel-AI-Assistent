@@ -20,20 +20,22 @@ export default function Error({
       <div className="mx-auto flex min-h-[60vh] max-w-lg items-center justify-center">
         <div className="glass-surface w-full rounded-3xl px-6 py-8 text-center sm:px-8">
           <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-destructive">
-            Room Management
+            Property Operations
           </p>
 
           <h1 className="mt-3 text-xl font-semibold tracking-[-0.02em]">
-            Unable to load rooms
+            Unable to load maintenance
           </h1>
 
           <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-muted-foreground">
-            Something went wrong while loading the room
-            management data.
+            Something went wrong while loading the maintenance data.
           </p>
 
           <div className="mt-6">
-            <Button onClick={() => reset()}>
+            <Button
+              type="button"
+              onClick={() => reset()}
+            >
               Try again
             </Button>
           </div>

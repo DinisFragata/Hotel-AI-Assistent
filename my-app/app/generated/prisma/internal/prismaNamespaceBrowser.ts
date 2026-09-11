@@ -57,6 +57,7 @@ export const ModelName = {
   Reservation: 'Reservation',
   Operation: 'Operation',
   Maintenance: 'Maintenance',
+  MaintenanceHistory: 'MaintenanceHistory',
   AIInsight: 'AIInsight'
 } as const
 
@@ -145,13 +146,28 @@ export const MaintenanceScalarFieldEnum = {
   title: 'title',
   description: 'description',
   status: 'status',
-  createdAt: 'createdAt',
-  completedAt: 'completedAt',
+  priority: 'priority',
+  dueDate: 'dueDate',
   roomId: 'roomId',
-  userId: 'userId'
+  assignedToId: 'assignedToId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  completedAt: 'completedAt'
 } as const
 
 export type MaintenanceScalarFieldEnum = (typeof MaintenanceScalarFieldEnum)[keyof typeof MaintenanceScalarFieldEnum]
+
+
+export const MaintenanceHistoryScalarFieldEnum = {
+  id: 'id',
+  type: 'type',
+  description: 'description',
+  maintenanceId: 'maintenanceId',
+  userId: 'userId',
+  createdAt: 'createdAt'
+} as const
+
+export type MaintenanceHistoryScalarFieldEnum = (typeof MaintenanceHistoryScalarFieldEnum)[keyof typeof MaintenanceHistoryScalarFieldEnum]
 
 
 export const AIInsightScalarFieldEnum = {

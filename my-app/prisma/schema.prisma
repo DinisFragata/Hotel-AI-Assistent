@@ -7,6 +7,102 @@ datasource db {
   provider = "postgresql"
 }
 
+model User {
+  id                  String               @id @default(cuid())
+  name                String
+  email               String               @unique
+  role                String
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  maintenanceAssigned Maintenance[]
+  maintenanceHistory  MaintenanceHistory[]
+}
+
+model Room {
+  id            String        @id @default(cuid())
+  number        String        @unique
+  floor         Int?
+  status        RoomStatus    @default(AVAILABLE)
+  capacity      Int           @default(2)
+  pricePerNight Decimal       @db.Decimal(10, 2)
+  maintenance   Maintenance[]
+  operations    Operation[]
+  reservations  Reservation[]
+}
+
+model Guest {
+  id           String        @id @default(cuid())
+  firstName    String
+  lastName     String
+  email        String?       @unique
+  phone        String?
+  createdAt    DateTime      @default(now())
+  reservations Reservation[]
+}
+
+model Reservation {
+  id          String            @id @default(cuid())
+  checkIn     DateTime
+  checkOut    DateTime
+  guestsCount Int
+  status      ReservationStatus @default(PENDING)
+  totalPrice  Decimal           @db.Decimal(10, 2)
+  guestId     String
+  roomId      String
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  guest       Guest             @relation(fields: [guestId], references: [id])
+  room        Room              @relation(fields: [roomId], references: [id])
+}
+
+model Operation {
+  id        String        @id @default(cuid())
+  type      OperationType
+  guestName String
+  time      DateTime
+  roomId    String
+  createdAt DateTime      @default(now())
+  room      Room          @relation(fields: [roomId], references: [id])
+}
+
+model Maintenance {
+  id           String               @id @default(cuid())
+  title        String
+  description  String?
+  status       MaintenanceStatus    @default(OPEN)
+  createdAt    DateTime             @default(now())
+  completedAt  DateTime?
+  roomId       String?
+  assignedToId String?
+  dueDate      DateTime?
+  priority     MaintenancePriority  @default(MEDIUM)
+  updatedAt    DateTime             @updatedAt
+  assignedTo   User?                @relation(fields: [assignedToId], references: [id])
+  room         Room?                @relation(fields: [roomId], references: [id])
+  history      MaintenanceHistory[]
+}
+
+model MaintenanceHistory {
+  id            String                 @id @default(cuid())
+  type          MaintenanceHistoryType
+  description   String
+  maintenanceId String
+  userId        String?
+  createdAt     DateTime               @default(now())
+  maintenance   Maintenance            @relation(fields: [maintenanceId], references: [id], onDelete: Cascade)
+  user          User?                  @relation(fields: [userId], references: [id])
+}
+
+model AIInsight {
+  id        String   @id @default(cuid())
+  room      String?
+  title     String
+  text      String
+  action    String?
+  confirmed Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
 enum RoomStatus {
   AVAILABLE
   OCCUPIED
@@ -34,92 +130,20 @@ enum MaintenanceStatus {
   COMPLETED
 }
 
-model User {
-  id        String   @id @default(cuid())
-  name      String
-  email     String   @unique
-  role      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  maintenance Maintenance[]
+enum MaintenancePriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
 }
 
-model Room {
-  id          String     @id @default(cuid())
-  number      String     @unique
-  floor       Int?
-  status      RoomStatus @default(AVAILABLE)
-  capacity    Int        @default(2)
-  pricePerNight Decimal  @db.Decimal(10, 2)
-
-  reservations Reservation[]
-  maintenance  Maintenance[]
-  operations   Operation[]
-}
-
-model Guest {
-  id        String   @id @default(cuid())
-  firstName String
-  lastName  String
-  email     String?  @unique
-  phone     String?
-  createdAt DateTime @default(now())
-
-  reservations Reservation[]
-}
-
-model Reservation {
-  id          String            @id @default(cuid())
-  checkIn     DateTime
-  checkOut    DateTime
-  guestsCount Int
-  status      ReservationStatus @default(PENDING)
-  totalPrice  Decimal           @db.Decimal(10, 2)
-
-  guestId String
-  roomId  String
-
-  guest Guest @relation(fields: [guestId], references: [id])
-  room  Room  @relation(fields: [roomId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Operation {
-  id        String        @id @default(cuid())
-  type      OperationType
-  guestName String
-  time      DateTime
-  roomId    String
-
-  room Room @relation(fields: [roomId], references: [id])
-
-  createdAt DateTime @default(now())
-}
-
-model Maintenance {
-  id          String             @id @default(cuid())
-  title       String
-  description String?
-  status      MaintenanceStatus  @default(OPEN)
-  createdAt   DateTime            @default(now())
-  completedAt DateTime?
-
-  roomId String?
-  userId String?
-
-  room Room? @relation(fields: [roomId], references: [id])
-  user User? @relation(fields: [userId], references: [id])
-}
-
-model AIInsight {
-  id        String   @id @default(cuid())
-  room      String?
-  title     String
-  text      String
-  action    String?
-  confirmed Boolean  @default(false)
-  createdAt DateTime @default(now())
+enum MaintenanceHistoryType {
+  CREATED
+  UPDATED
+  ASSIGNED
+  UNASSIGNED
+  PRIORITY_CHANGED
+  DUE_DATE_CHANGED
+  STATUS_CHANGED
+  COMPLETED
 }

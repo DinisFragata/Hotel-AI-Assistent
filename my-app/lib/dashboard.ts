@@ -40,6 +40,21 @@ export async function getDashboardData() {
       orderBy: {
         createdAt: "desc",
       },
+      include: {
+        room: {
+          select: {
+            id: true,
+            number: true,
+          },
+        },
+
+        assignedTo: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
     }),
 
     prisma.aIInsight.findMany({
