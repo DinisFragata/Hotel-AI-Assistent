@@ -249,6 +249,13 @@ export type EnumMaintenanceStatusFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumMaintenanceStatusFilter<$PrismaModel> | $Enums.MaintenanceStatus
 }
 
+export type EnumMaintenancePriorityFilter<$PrismaModel = never> = {
+  equals?: $Enums.MaintenancePriority | Prisma.EnumMaintenancePriorityFieldRefInput<$PrismaModel>
+  in?: $Enums.MaintenancePriority[] | Prisma.ListEnumMaintenancePriorityFieldRefInput<$PrismaModel>
+  notIn?: $Enums.MaintenancePriority[] | Prisma.ListEnumMaintenancePriorityFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumMaintenancePriorityFilter<$PrismaModel> | $Enums.MaintenancePriority
+}
+
 export type DateTimeNullableFilter<$PrismaModel = never> = {
   equals?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel> | null
   in?: Date[] | string[] | Prisma.ListDateTimeFieldRefInput<$PrismaModel> | null
@@ -270,6 +277,16 @@ export type EnumMaintenanceStatusWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumMaintenanceStatusFilter<$PrismaModel>
 }
 
+export type EnumMaintenancePriorityWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.MaintenancePriority | Prisma.EnumMaintenancePriorityFieldRefInput<$PrismaModel>
+  in?: $Enums.MaintenancePriority[] | Prisma.ListEnumMaintenancePriorityFieldRefInput<$PrismaModel>
+  notIn?: $Enums.MaintenancePriority[] | Prisma.ListEnumMaintenancePriorityFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumMaintenancePriorityWithAggregatesFilter<$PrismaModel> | $Enums.MaintenancePriority
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumMaintenancePriorityFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumMaintenancePriorityFilter<$PrismaModel>
+}
+
 export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
   equals?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel> | null
   in?: Date[] | string[] | Prisma.ListDateTimeFieldRefInput<$PrismaModel> | null
@@ -282,6 +299,23 @@ export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
   _min?: Prisma.NestedDateTimeNullableFilter<$PrismaModel>
   _max?: Prisma.NestedDateTimeNullableFilter<$PrismaModel>
+}
+
+export type EnumMaintenanceHistoryTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.MaintenanceHistoryType | Prisma.EnumMaintenanceHistoryTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.MaintenanceHistoryType[] | Prisma.ListEnumMaintenanceHistoryTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.MaintenanceHistoryType[] | Prisma.ListEnumMaintenanceHistoryTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumMaintenanceHistoryTypeFilter<$PrismaModel> | $Enums.MaintenanceHistoryType
+}
+
+export type EnumMaintenanceHistoryTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.MaintenanceHistoryType | Prisma.EnumMaintenanceHistoryTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.MaintenanceHistoryType[] | Prisma.ListEnumMaintenanceHistoryTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.MaintenanceHistoryType[] | Prisma.ListEnumMaintenanceHistoryTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumMaintenanceHistoryTypeWithAggregatesFilter<$PrismaModel> | $Enums.MaintenanceHistoryType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumMaintenanceHistoryTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumMaintenanceHistoryTypeFilter<$PrismaModel>
 }
 
 export type BoolFilter<$PrismaModel = never> = {
@@ -545,6 +579,13 @@ export type NestedEnumMaintenanceStatusFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumMaintenanceStatusFilter<$PrismaModel> | $Enums.MaintenanceStatus
 }
 
+export type NestedEnumMaintenancePriorityFilter<$PrismaModel = never> = {
+  equals?: $Enums.MaintenancePriority | Prisma.EnumMaintenancePriorityFieldRefInput<$PrismaModel>
+  in?: $Enums.MaintenancePriority[] | Prisma.ListEnumMaintenancePriorityFieldRefInput<$PrismaModel>
+  notIn?: $Enums.MaintenancePriority[] | Prisma.ListEnumMaintenancePriorityFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumMaintenancePriorityFilter<$PrismaModel> | $Enums.MaintenancePriority
+}
+
 export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
   equals?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel> | null
   in?: Date[] | string[] | Prisma.ListDateTimeFieldRefInput<$PrismaModel> | null
@@ -566,6 +607,16 @@ export type NestedEnumMaintenanceStatusWithAggregatesFilter<$PrismaModel = never
   _max?: Prisma.NestedEnumMaintenanceStatusFilter<$PrismaModel>
 }
 
+export type NestedEnumMaintenancePriorityWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.MaintenancePriority | Prisma.EnumMaintenancePriorityFieldRefInput<$PrismaModel>
+  in?: $Enums.MaintenancePriority[] | Prisma.ListEnumMaintenancePriorityFieldRefInput<$PrismaModel>
+  notIn?: $Enums.MaintenancePriority[] | Prisma.ListEnumMaintenancePriorityFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumMaintenancePriorityWithAggregatesFilter<$PrismaModel> | $Enums.MaintenancePriority
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumMaintenancePriorityFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumMaintenancePriorityFilter<$PrismaModel>
+}
+
 export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
   equals?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel> | null
   in?: Date[] | string[] | Prisma.ListDateTimeFieldRefInput<$PrismaModel> | null
@@ -578,6 +629,23 @@ export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
   _min?: Prisma.NestedDateTimeNullableFilter<$PrismaModel>
   _max?: Prisma.NestedDateTimeNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumMaintenanceHistoryTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.MaintenanceHistoryType | Prisma.EnumMaintenanceHistoryTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.MaintenanceHistoryType[] | Prisma.ListEnumMaintenanceHistoryTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.MaintenanceHistoryType[] | Prisma.ListEnumMaintenanceHistoryTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumMaintenanceHistoryTypeFilter<$PrismaModel> | $Enums.MaintenanceHistoryType
+}
+
+export type NestedEnumMaintenanceHistoryTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.MaintenanceHistoryType | Prisma.EnumMaintenanceHistoryTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.MaintenanceHistoryType[] | Prisma.ListEnumMaintenanceHistoryTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.MaintenanceHistoryType[] | Prisma.ListEnumMaintenanceHistoryTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumMaintenanceHistoryTypeWithAggregatesFilter<$PrismaModel> | $Enums.MaintenanceHistoryType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumMaintenanceHistoryTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumMaintenanceHistoryTypeFilter<$PrismaModel>
 }
 
 export type NestedBoolFilter<$PrismaModel = never> = {

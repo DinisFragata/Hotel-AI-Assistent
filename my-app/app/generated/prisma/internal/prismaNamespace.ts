@@ -403,6 +403,7 @@ export const ModelName = {
   Reservation: 'Reservation',
   Operation: 'Operation',
   Maintenance: 'Maintenance',
+  MaintenanceHistory: 'MaintenanceHistory',
   AIInsight: 'AIInsight'
 } as const
 
@@ -419,7 +420,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "room" | "guest" | "reservation" | "operation" | "maintenance" | "aIInsight"
+    modelProps: "user" | "room" | "guest" | "reservation" | "operation" | "maintenance" | "maintenanceHistory" | "aIInsight"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -867,6 +868,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    MaintenanceHistory: {
+      payload: Prisma.$MaintenanceHistoryPayload<ExtArgs>
+      fields: Prisma.MaintenanceHistoryFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.MaintenanceHistoryFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MaintenanceHistoryPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.MaintenanceHistoryFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MaintenanceHistoryPayload>
+        }
+        findFirst: {
+          args: Prisma.MaintenanceHistoryFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MaintenanceHistoryPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.MaintenanceHistoryFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MaintenanceHistoryPayload>
+        }
+        findMany: {
+          args: Prisma.MaintenanceHistoryFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MaintenanceHistoryPayload>[]
+        }
+        create: {
+          args: Prisma.MaintenanceHistoryCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MaintenanceHistoryPayload>
+        }
+        createMany: {
+          args: Prisma.MaintenanceHistoryCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.MaintenanceHistoryCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MaintenanceHistoryPayload>[]
+        }
+        delete: {
+          args: Prisma.MaintenanceHistoryDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MaintenanceHistoryPayload>
+        }
+        update: {
+          args: Prisma.MaintenanceHistoryUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MaintenanceHistoryPayload>
+        }
+        deleteMany: {
+          args: Prisma.MaintenanceHistoryDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.MaintenanceHistoryUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.MaintenanceHistoryUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MaintenanceHistoryPayload>[]
+        }
+        upsert: {
+          args: Prisma.MaintenanceHistoryUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MaintenanceHistoryPayload>
+        }
+        aggregate: {
+          args: Prisma.MaintenanceHistoryAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateMaintenanceHistory>
+        }
+        groupBy: {
+          args: Prisma.MaintenanceHistoryGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MaintenanceHistoryGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.MaintenanceHistoryCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MaintenanceHistoryCountAggregateOutputType> | number
+        }
+      }
+    }
     AIInsight: {
       payload: Prisma.$AIInsightPayload<ExtArgs>
       fields: Prisma.AIInsightFieldRefs
@@ -1049,13 +1124,28 @@ export const MaintenanceScalarFieldEnum = {
   title: 'title',
   description: 'description',
   status: 'status',
-  createdAt: 'createdAt',
-  completedAt: 'completedAt',
+  priority: 'priority',
+  dueDate: 'dueDate',
   roomId: 'roomId',
-  userId: 'userId'
+  assignedToId: 'assignedToId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  completedAt: 'completedAt'
 } as const
 
 export type MaintenanceScalarFieldEnum = (typeof MaintenanceScalarFieldEnum)[keyof typeof MaintenanceScalarFieldEnum]
+
+
+export const MaintenanceHistoryScalarFieldEnum = {
+  id: 'id',
+  type: 'type',
+  description: 'description',
+  maintenanceId: 'maintenanceId',
+  userId: 'userId',
+  createdAt: 'createdAt'
+} as const
+
+export type MaintenanceHistoryScalarFieldEnum = (typeof MaintenanceHistoryScalarFieldEnum)[keyof typeof MaintenanceHistoryScalarFieldEnum]
 
 
 export const AIInsightScalarFieldEnum = {
@@ -1210,6 +1300,34 @@ export type EnumMaintenanceStatusFieldRefInput<$PrismaModel> = FieldRefInputType
  * Reference to a field of type 'MaintenanceStatus[]'
  */
 export type ListEnumMaintenanceStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MaintenanceStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'MaintenancePriority'
+ */
+export type EnumMaintenancePriorityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MaintenancePriority'>
+    
+
+
+/**
+ * Reference to a field of type 'MaintenancePriority[]'
+ */
+export type ListEnumMaintenancePriorityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MaintenancePriority[]'>
+    
+
+
+/**
+ * Reference to a field of type 'MaintenanceHistoryType'
+ */
+export type EnumMaintenanceHistoryTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MaintenanceHistoryType'>
+    
+
+
+/**
+ * Reference to a field of type 'MaintenanceHistoryType[]'
+ */
+export type ListEnumMaintenanceHistoryTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MaintenanceHistoryType[]'>
     
 
 
@@ -1390,6 +1508,7 @@ export type GlobalOmitConfig = {
   reservation?: Prisma.ReservationOmit
   operation?: Prisma.OperationOmit
   maintenance?: Prisma.MaintenanceOmit
+  maintenanceHistory?: Prisma.MaintenanceHistoryOmit
   aIInsight?: Prisma.AIInsightOmit
 }
 

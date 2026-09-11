@@ -6,6 +6,11 @@ import {
 
 import { getDashboardData } from "@/lib/dashboard";
 
+import {
+  getMaintenanceDueDateLabel,
+  getMaintenanceDueDateState,
+} from "@/lib/maintenance/due-date";
+
 function formatTime(date: Date) {
   return new Intl.DateTimeFormat("en-GB", {
     hour: "2-digit",
@@ -50,7 +55,7 @@ function StatCard({
   label: string;
   value: string;
   suffix?: string;
-  description?: string;
+  description?: React.ReactNode;
   highlighted?: boolean;
 }) {
   return (
@@ -201,11 +206,69 @@ export default async function Home() {
       operation.type === "CHECK_OUT",
   ).length;
 
-  const activeRequests = maintenance.filter(
+  const activeMaintenance =
+  maintenance.filter(
     (item) =>
       item.status === "OPEN" ||
       item.status === "IN_PROGRESS",
-  ).length;
+  );
+
+  const urgentMaintenance =
+    activeMaintenance.filter(
+      (item) => item.priority === "URGENT",
+    );
+
+  const overdueMaintenance =
+    activeMaintenance.filter(
+      (item) =>
+        getMaintenanceDueDateState(
+          item.dueDate,
+        ) === "OVERDUE",
+    );
+
+  const activeRequests = activeMaintenance.length;
+
+  const maintenanceAttention = [
+    ...activeMaintenance,
+  ].sort((a, b) => {
+    const aDueState =
+      getMaintenanceDueDateState(a.dueDate);
+
+    const bDueState =
+      getMaintenanceDueDateState(b.dueDate);
+
+    const dueWeight = {
+      OVERDUE: 0,
+      DUE_TODAY: 1,
+      DUE_SOON: 2,
+    };
+
+    const aDueWeight =
+      aDueState === null
+        ? 3
+        : dueWeight[aDueState];
+
+    const bDueWeight =
+      bDueState === null
+        ? 3
+        : dueWeight[bDueState];
+
+    if (aDueWeight !== bDueWeight) {
+      return aDueWeight - bDueWeight;
+    }
+
+    const priorityWeight = {
+      URGENT: 0,
+      HIGH: 1,
+      MEDIUM: 2,
+      LOW: 3,
+    };
+
+    return (
+      priorityWeight[a.priority] -
+      priorityWeight[b.priority]
+    );
+  }).slice(0, 5);
 
   const visibleOperations = [
     ...todayOperations,
@@ -231,15 +294,15 @@ export default async function Home() {
         : "Good evening";
 
   return (
-    <section className="relative min-h-screen px-10 pb-10 pt-10">
+    <section className="relative min-h-screen px-4 pb-8 pt-6 sm:px-6 sm:pb-10 sm:pt-8 lg:px-10 lg:pt-10">
       <div className="mx-auto max-w-350">
         {/* Page introduction */}
-        <div className="mb-10">
+        <div className="mb-7 sm:mb-10">
           <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">
             Property Overview
           </p>
 
-          <h1 className="text-[42px] font-semibold tracking-[-0.04em]">
+          <h1 className="text-3xl font-semibold tracking-[-0.04em] sm:text-4xl lg:text-[42px]">
             {greeting}, Dinis.
           </h1>
 
@@ -250,7 +313,7 @@ export default async function Home() {
         </div>
 
         {/* Statistics */}
-        <div className="mb-10 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
+        <div className="mb-10 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <StatCard
             label="Occupancy"
             value={String(occupancy)}
@@ -271,10 +334,19 @@ export default async function Home() {
           />
 
           <StatCard
-            label="Active requests"
+            label="Active maintenance"
             value={String(activeRequests)}
-            description="Open maintenance requests"
-            highlighted
+            description={
+              urgentMaintenance.length > 0 ||
+              overdueMaintenance.length > 0 ? (
+                <span className="font-medium text-destructive">
+                  {urgentMaintenance.length} urgent ·{" "}
+                  {overdueMaintenance.length} overdue
+                </span>
+              ) : (
+                "No urgent or overdue requests"
+              )
+            }
           />
         </div>
 
@@ -322,13 +394,12 @@ export default async function Home() {
                     return (
                       <div
                         key={operation.id}
-                        className={[
-                          "flex items-center justify-between gap-6 px-6 py-4",
-                          index !==
-                          visibleOperations.length - 1
-                            ? "border-b border-white/10"
-                            : "",
-                        ].join(" ")}
+                          className={[
+                            "flex flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6",
+                            index !== visibleOperations.length - 1
+                              ? "border-b border-white/10"
+                              : "",
+                          ].join(" ")}
                       >
                         <div className="min-w-0">
                           <p className="truncate font-medium">
@@ -462,6 +533,145 @@ export default async function Home() {
               </div>
             )}
           </div>
+        </div>
+        {/* Maintenance overview */}
+        <div className="mt-6 glass-surface overflow-hidden rounded-3xl">
+          <div className="border-b border-white/10 px-4 py-5 sm:px-6">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h2 className="text-lg font-semibold">
+                  Maintenance Overview
+                </h2>
+
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Operational issues that may require attention.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-3 gap-2">
+                <div className="rounded-xl border border-white/10 bg-white/2 px-3 py-2 text-center">
+                  <p className="text-lg font-semibold">
+                    {activeMaintenance.length}
+                  </p>
+
+                  <p className="text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
+                    Active
+                  </p>
+                </div>
+
+                <div className="rounded-xl border border-destructive/15 bg-destructive/5 px-3 py-2 text-center">
+                  <p className="text-lg font-semibold text-destructive">
+                    {urgentMaintenance.length}
+                  </p>
+
+                  <p className="text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
+                    Urgent
+                  </p>
+                </div>
+
+                <div className="rounded-xl border border-yellow-300/15 bg-yellow-300/5 px-3 py-2 text-center">
+                  <p className="text-lg font-semibold text-yellow-300">
+                    {overdueMaintenance.length}
+                  </p>
+
+                  <p className="text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
+                    Overdue
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {maintenanceAttention.length === 0 ? (
+            <div className="flex min-h-40 items-center justify-center px-6">
+              <div className="text-center">
+                <p className="font-medium">
+                  No maintenance requires attention
+                </p>
+
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                  There are no urgent, overdue or upcoming maintenance requests.
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div>
+              {maintenanceAttention.map(
+                (item, index) => {
+                  const dueState =
+                    getMaintenanceDueDateState(
+                      item.dueDate,
+                    );
+
+                  const dueLabel =
+                    getMaintenanceDueDateLabel(
+                      dueState,
+                    );
+
+                  return (
+                    <div
+                      key={item.id}
+                      className={[
+                        "flex flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6",
+                        index !==
+                          maintenanceAttention.length - 1
+                          ? "border-b border-white/10"
+                          : "",
+                      ].join(" ")}
+                    >
+                      <div className="min-w-0">
+                        <p className="truncate font-medium">
+                          {item.title}
+                        </p>
+
+                        <p className="mt-1 text-sm text-muted-foreground">
+                          {item.room
+                            ? `Room ${item.room.number}`
+                            : "No room assigned"}
+                          {" · "}
+                          {item.assignedTo?.name ??
+                            "Unassigned"}
+                        </p>
+                      </div>
+
+                      <div className="flex shrink-0 flex-wrap items-center gap-2">
+                        <span
+                          className={[
+                            "rounded-full border px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.08em]",
+                            item.priority === "URGENT"
+                              ? "border-destructive/20 bg-destructive/10 text-destructive"
+                              : item.priority === "HIGH"
+                                ? "border-primary/20 bg-primary/10 text-primary"
+                                : "border-white/10 bg-white/5 text-muted-foreground",
+                          ].join(" ")}
+                        >
+                          {item.priority}
+                        </span>
+
+                        {dueLabel && (
+                          <span
+                            className={[
+                              "text-xs font-medium",
+                              dueState === "OVERDUE" &&
+                                "text-destructive",
+                              dueState === "DUE_TODAY" &&
+                                "text-yellow-300",
+                              dueState === "DUE_SOON" &&
+                                "text-secondary",
+                            ]
+                              .filter(Boolean)
+                              .join(" ")}
+                          >
+                            {dueLabel}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                },
+              )}
+            </div>
+          )}
         </div>
       </div>
     </section>

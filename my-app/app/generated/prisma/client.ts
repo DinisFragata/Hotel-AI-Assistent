@@ -72,6 +72,11 @@ export type Operation = Prisma.OperationModel
  */
 export type Maintenance = Prisma.MaintenanceModel
 /**
+ * Model MaintenanceHistory
+ * 
+ */
+export type MaintenanceHistory = Prisma.MaintenanceHistoryModel
+/**
  * Model AIInsight
  * 
  */

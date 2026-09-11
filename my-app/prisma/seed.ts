@@ -5,6 +5,8 @@ import {
   ReservationStatus,
   OperationType,
   MaintenanceStatus,
+  MaintenancePriority,
+  MaintenanceHistoryType,
 } from "../app/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 
@@ -27,6 +29,7 @@ async function main() {
     },
     update: {},
     create: {
+      id: "user_admin_dinis",
       name: "Dinis Fragata",
       email: "admin@dinisfragata.pt",
       role: "PROPERTY_MANAGER",
@@ -219,7 +222,7 @@ async function main() {
   const amelia = guests[7];
 
   // --------------------------------------------------
-  // RESERVATIONS
+  // DATE HELPERS
   // --------------------------------------------------
 
   const today = new Date();
@@ -231,8 +234,13 @@ async function main() {
     return result;
   };
 
-  await prisma.reservation.create({
-    data: {
+  // --------------------------------------------------
+  // RESERVATIONS
+  // --------------------------------------------------
+
+  const reservationData = [
+    {
+      id: "reservation_eleanor_202",
       checkIn: date(0, 14),
       checkOut: date(3, 11),
       guestsCount: 2,
@@ -241,10 +249,8 @@ async function main() {
       guestId: eleanor.id,
       roomId: room202.id,
     },
-  });
-
-  await prisma.reservation.create({
-    data: {
+    {
+      id: "reservation_theodore_204",
       checkIn: date(0, 15),
       checkOut: date(4, 11),
       guestsCount: 2,
@@ -253,10 +259,8 @@ async function main() {
       guestId: theodore.id,
       roomId: room204.id,
     },
-  });
-
-  await prisma.reservation.create({
-    data: {
+    {
+      id: "reservation_sophia_301",
       checkIn: date(-1, 15),
       checkOut: date(2, 11),
       guestsCount: 2,
@@ -265,10 +269,8 @@ async function main() {
       guestId: sophia.id,
       roomId: room301.id,
     },
-  });
-
-  await prisma.reservation.create({
-    data: {
+    {
+      id: "reservation_oliver_401",
       checkIn: date(-2, 14),
       checkOut: date(1, 11),
       guestsCount: 2,
@@ -277,10 +279,8 @@ async function main() {
       guestId: oliver.id,
       roomId: room401.id,
     },
-  });
-
-  await prisma.reservation.create({
-    data: {
+    {
+      id: "reservation_amelia_510",
       checkIn: date(-1, 14),
       checkOut: date(2, 12),
       guestsCount: 3,
@@ -289,10 +289,8 @@ async function main() {
       guestId: amelia.id,
       roomId: room510.id,
     },
-  });
-
-  await prisma.reservation.create({
-    data: {
+    {
+      id: "reservation_arthur_402",
       checkIn: date(0, 14),
       checkOut: date(3, 11),
       guestsCount: 2,
@@ -301,10 +299,8 @@ async function main() {
       guestId: arthur.id,
       roomId: room402.id,
     },
-  });
-
-  await prisma.reservation.create({
-    data: {
+    {
+      id: "reservation_clara_201",
       checkIn: date(2, 15),
       checkOut: date(5, 11),
       guestsCount: 2,
@@ -313,10 +309,8 @@ async function main() {
       guestId: clara.id,
       roomId: room201.id,
     },
-  });
-
-  await prisma.reservation.create({
-    data: {
+    {
+      id: "reservation_sterling_302",
       checkIn: date(5, 14),
       checkOut: date(8, 11),
       guestsCount: 2,
@@ -325,151 +319,343 @@ async function main() {
       guestId: sterling.id,
       roomId: room302.id,
     },
-  });
+  ];
+
+  for (const reservation of reservationData) {
+    await prisma.reservation.upsert({
+      where: {
+        id: reservation.id,
+      },
+      update: reservation,
+      create: reservation,
+    });
+  }
 
   // --------------------------------------------------
   // TODAY'S OPERATIONS
   // --------------------------------------------------
 
-  await prisma.operation.createMany({
-    data: [
-      {
-        type: OperationType.CHECK_IN,
-        guestName: "Eleanor Vance",
-        time: date(0, 14),
-        roomId: room202.id,
+  const operationData = [
+    {
+      id: "operation_checkin_eleanor",
+      type: OperationType.CHECK_IN,
+      guestName: "Eleanor Vance",
+      time: date(0, 14),
+      roomId: room202.id,
+    },
+    {
+      id: "operation_checkout_arthur",
+      type: OperationType.CHECK_OUT,
+      guestName: "Arthur Pendelton",
+      time: date(0, 11),
+      roomId: room301.id,
+    },
+    {
+      id: "operation_checkin_theodore",
+      type: OperationType.CHECK_IN,
+      guestName: "Theodore Montague",
+      time: date(0, 15),
+      roomId: room204.id,
+    },
+    {
+      id: "operation_checkout_clara",
+      type: OperationType.CHECK_OUT,
+      guestName: "Clara Bow",
+      time: date(0, 12),
+      roomId: room510.id,
+    },
+    {
+      id: "operation_checkin_sophia",
+      type: OperationType.CHECK_IN,
+      guestName: "Sophia Whitmore",
+      time: date(0, 16),
+      roomId: room401.id,
+    },
+    {
+      id: "operation_checkout_oliver",
+      type: OperationType.CHECK_OUT,
+      guestName: "Oliver Harrington",
+      time: date(0, 11),
+      roomId: room402.id,
+    },
+    {
+      id: "operation_checkin_amelia",
+      type: OperationType.CHECK_IN,
+      guestName: "Amelia Crawford",
+      time: date(0, 15),
+      roomId: room510.id,
+    },
+    {
+      id: "operation_checkin_sterling",
+      type: OperationType.CHECK_IN,
+      guestName: "James Sterling",
+      time: date(0, 17),
+      roomId: room201.id,
+    },
+  ];
+
+  for (const operation of operationData) {
+    await prisma.operation.upsert({
+      where: {
+        id: operation.id,
       },
-      {
-        type: OperationType.CHECK_OUT,
-        guestName: "Arthur Pendelton",
-        time: date(0, 11),
-        roomId: room301.id,
-      },
-      {
-        type: OperationType.CHECK_IN,
-        guestName: "Theodore Montague",
-        time: date(0, 15),
-        roomId: room204.id,
-      },
-      {
-        type: OperationType.CHECK_OUT,
-        guestName: "Clara Bow",
-        time: date(0, 12),
-        roomId: room510.id,
-      },
-      {
-        type: OperationType.CHECK_IN,
-        guestName: "Sophia Whitmore",
-        time: date(0, 16),
-        roomId: room401.id,
-      },
-      {
-        type: OperationType.CHECK_OUT,
-        guestName: "Oliver Harrington",
-        time: date(0, 11),
-        roomId: room402.id,
-      },
-      {
-        type: OperationType.CHECK_IN,
-        guestName: "Amelia Crawford",
-        time: date(0, 15),
-        roomId: room510.id,
-      },
-      {
-        type: OperationType.CHECK_IN,
-        guestName: "James Sterling",
-        time: date(0, 17),
-        roomId: room201.id,
-      },
-    ],
-  });
+      update: operation,
+      create: operation,
+    });
+  }
 
   // --------------------------------------------------
   // MAINTENANCE
   // --------------------------------------------------
 
-  await prisma.maintenance.createMany({
-    data: [
-      {
-        title: "Air conditioning inspection",
-        description: "AC unit making unusual noise.",
-        status: MaintenanceStatus.OPEN,
-        roomId: room302.id,
-        userId: admin.id,
+  const maintenanceData = [
+    {
+      id: "maintenance_ac_inspection",
+      title: "Air conditioning inspection",
+      description: "AC unit making unusual noise.",
+      status: MaintenanceStatus.OPEN,
+      priority: MaintenancePriority.HIGH,
+      dueDate: date(1, 17),
+      roomId: room302.id,
+      assignedToId: admin.id,
+      completedAt: null,
+    },
+    {
+      id: "maintenance_faucet_replacement",
+      title: "Bathroom faucet replacement",
+      description: "Guest reported a leaking faucet.",
+      status: MaintenanceStatus.IN_PROGRESS,
+      priority: MaintenancePriority.URGENT,
+      dueDate: date(0, 16),
+      roomId: room204.id,
+      assignedToId: admin.id,
+      completedAt: null,
+    },
+    {
+      id: "maintenance_bedside_lamp",
+      title: "Replace bedside lamp",
+      description: "Lamp not powering on.",
+      status: MaintenanceStatus.OPEN,
+      priority: MaintenancePriority.MEDIUM,
+      dueDate: date(3, 12),
+      roomId: room201.id,
+      assignedToId: null,
+      completedAt: null,
+    },
+    {
+      id: "maintenance_window_lock",
+      title: "Window lock inspection",
+      description: "Check window lock before next arrival.",
+      status: MaintenanceStatus.COMPLETED,
+      priority: MaintenancePriority.LOW,
+      dueDate: date(-2, 17),
+      roomId: room401.id,
+      assignedToId: admin.id,
+      completedAt: date(-1, 16),
+    },
+    {
+      id: "maintenance_tv_remote",
+      title: "TV remote replacement",
+      description: "Remote control batteries and buttons faulty.",
+      status: MaintenanceStatus.OPEN,
+      priority: MaintenancePriority.HIGH,
+      dueDate: date(5, 14),
+      roomId: room510.id,
+      assignedToId: admin.id,
+      completedAt: null,
+    },
+  ];
+
+  for (const maintenance of maintenanceData) {
+    await prisma.maintenance.upsert({
+      where: {
+        id: maintenance.id,
       },
-      {
-        title: "Bathroom faucet replacement",
-        description: "Guest reported a leaking faucet.",
-        status: MaintenanceStatus.IN_PROGRESS,
-        roomId: room204.id,
-        userId: admin.id,
+      update: maintenance,
+      create: maintenance,
+    });
+  }
+
+  // --------------------------------------------------
+  // MAINTENANCE HISTORY
+  // --------------------------------------------------
+
+  const maintenanceHistoryData = [
+    {
+      id: "maintenance_history_ac_created",
+      type: MaintenanceHistoryType.CREATED,
+      description: "Maintenance request created.",
+      maintenanceId: "maintenance_ac_inspection",
+      userId: admin.id,
+    },
+    {
+      id: "maintenance_history_ac_assigned",
+      type: MaintenanceHistoryType.ASSIGNED,
+      description: "Maintenance request assigned to Dinis Fragata.",
+      maintenanceId: "maintenance_ac_inspection",
+      userId: admin.id,
+    },
+    {
+      id: "maintenance_history_ac_priority",
+      type: MaintenanceHistoryType.PRIORITY_CHANGED,
+      description: "Priority set to HIGH.",
+      maintenanceId: "maintenance_ac_inspection",
+      userId: admin.id,
+    },
+
+    {
+      id: "maintenance_history_faucet_created",
+      type: MaintenanceHistoryType.CREATED,
+      description: "Maintenance request created.",
+      maintenanceId: "maintenance_faucet_replacement",
+      userId: admin.id,
+    },
+    {
+      id: "maintenance_history_faucet_assigned",
+      type: MaintenanceHistoryType.ASSIGNED,
+      description: "Maintenance request assigned to Dinis Fragata.",
+      maintenanceId: "maintenance_faucet_replacement",
+      userId: admin.id,
+    },
+    {
+      id: "maintenance_history_faucet_priority",
+      type: MaintenanceHistoryType.PRIORITY_CHANGED,
+      description: "Priority set to URGENT.",
+      maintenanceId: "maintenance_faucet_replacement",
+      userId: admin.id,
+    },
+    {
+      id: "maintenance_history_faucet_status",
+      type: MaintenanceHistoryType.STATUS_CHANGED,
+      description: "Status changed to IN_PROGRESS.",
+      maintenanceId: "maintenance_faucet_replacement",
+      userId: admin.id,
+    },
+
+    {
+      id: "maintenance_history_lamp_created",
+      type: MaintenanceHistoryType.CREATED,
+      description: "Maintenance request created.",
+      maintenanceId: "maintenance_bedside_lamp",
+      userId: admin.id,
+    },
+
+    {
+      id: "maintenance_history_window_created",
+      type: MaintenanceHistoryType.CREATED,
+      description: "Maintenance request created.",
+      maintenanceId: "maintenance_window_lock",
+      userId: admin.id,
+    },
+    {
+      id: "maintenance_history_window_assigned",
+      type: MaintenanceHistoryType.ASSIGNED,
+      description: "Maintenance request assigned to Dinis Fragata.",
+      maintenanceId: "maintenance_window_lock",
+      userId: admin.id,
+    },
+    {
+      id: "maintenance_history_window_status",
+      type: MaintenanceHistoryType.STATUS_CHANGED,
+      description: "Status changed to IN_PROGRESS.",
+      maintenanceId: "maintenance_window_lock",
+      userId: admin.id,
+    },
+    {
+      id: "maintenance_history_window_completed",
+      type: MaintenanceHistoryType.COMPLETED,
+      description: "Maintenance request marked as completed.",
+      maintenanceId: "maintenance_window_lock",
+      userId: admin.id,
+    },
+
+    {
+      id: "maintenance_history_tv_created",
+      type: MaintenanceHistoryType.CREATED,
+      description: "Maintenance request created.",
+      maintenanceId: "maintenance_tv_remote",
+      userId: admin.id,
+    },
+    {
+      id: "maintenance_history_tv_assigned",
+      type: MaintenanceHistoryType.ASSIGNED,
+      description: "Maintenance request assigned to Dinis Fragata.",
+      maintenanceId: "maintenance_tv_remote",
+      userId: admin.id,
+    },
+    {
+      id: "maintenance_history_tv_priority",
+      type: MaintenanceHistoryType.PRIORITY_CHANGED,
+      description: "Priority set to HIGH.",
+      maintenanceId: "maintenance_tv_remote",
+      userId: admin.id,
+    },
+  ];
+
+  for (const history of maintenanceHistoryData) {
+    await prisma.maintenanceHistory.upsert({
+      where: {
+        id: history.id,
       },
-      {
-        title: "Replace bedside lamp",
-        description: "Lamp not powering on.",
-        status: MaintenanceStatus.OPEN,
-        roomId: room201.id,
-        userId: admin.id,
-      },
-      {
-        title: "Window lock inspection",
-        description: "Check window lock before next arrival.",
-        status: MaintenanceStatus.COMPLETED,
-        roomId: room401.id,
-        userId: admin.id,
-        completedAt: new Date(),
-      },
-      {
-        title: "TV remote replacement",
-        description: "Remote control batteries and buttons faulty.",
-        status: MaintenanceStatus.OPEN,
-        roomId: room510.id,
-        userId: admin.id,
-      },
-    ],
-  });
+      update: history,
+      create: history,
+    });
+  }
 
   // --------------------------------------------------
   // AI INSIGHTS
   // --------------------------------------------------
 
-  await prisma.aIInsight.createMany({
-    data: [
-      {
-        room: "Room 204",
-        title: "Guest preference detected",
-        text: "Mr. Sterling prefers non-feather pillows. Room service notified.",
-        action: "CONFIRM",
-        confirmed: false,
+  const aiInsightData = [
+    {
+      id: "ai_guest_preference_204",
+      room: "Room 204",
+      title: "Guest preference detected",
+      text: "Mr. Sterling prefers non-feather pillows. Room service notified.",
+      action: "CONFIRM",
+      confirmed: false,
+    },
+    {
+      id: "ai_celebration_205",
+      room: "Room 205",
+      title: "Celebration detected",
+      text: "Anniversary celebration. Champagne delivery scheduled for 18:00.",
+      action: "SCHEDULED",
+      confirmed: true,
+    },
+    {
+      id: "ai_early_arrival_401",
+      room: "Room 401",
+      title: "Early arrival",
+      text: "Guest arriving 45 minutes earlier than originally expected.",
+      action: "REVIEW",
+      confirmed: false,
+    },
+    {
+      id: "ai_maintenance_risk_302",
+      room: "Room 302",
+      title: "Maintenance risk",
+      text: "Recurring AC issue detected. Consider scheduling a preventive inspection.",
+      action: "REVIEW",
+      confirmed: false,
+    },
+  ];
+
+  for (const insight of aiInsightData) {
+    await prisma.aIInsight.upsert({
+      where: {
+        id: insight.id,
       },
-      {
-        room: "Room 205",
-        title: "Celebration detected",
-        text: "Anniversary celebration. Champagne delivery scheduled for 18:00.",
-        action: "SCHEDULED",
-        confirmed: true,
-      },
-      {
-        room: "Room 401",
-        title: "Early arrival",
-        text: "Guest arriving 45 minutes earlier than originally expected.",
-        action: "REVIEW",
-        confirmed: false,
-      },
-      {
-        room: "Room 302",
-        title: "Maintenance risk",
-        text: "Recurring AC issue detected. Consider scheduling a preventive inspection.",
-        action: "REVIEW",
-        confirmed: false,
-      },
-    ],
-  });
+      update: insight,
+      create: insight,
+    });
+  }
 
   console.log("✅ Database seeded successfully!");
   console.log(`Created/updated ${rooms.length} rooms.`);
   console.log(`Created/updated ${guests.length} guests.`);
-  console.log("Created reservations, operations, maintenance requests and AI insights.");
+  console.log(`Created/updated ${maintenanceData.length} maintenance requests.`);
+  console.log("Created/updated reservations, operations, maintenance history and AI insights.");
 }
 
 main()
