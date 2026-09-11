@@ -190,7 +190,8 @@ export type UserWhereInput = {
   role?: Prisma.StringFilter<"User"> | string
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
-  maintenance?: Prisma.MaintenanceListRelationFilter
+  maintenanceAssigned?: Prisma.MaintenanceListRelationFilter
+  maintenanceHistory?: Prisma.MaintenanceHistoryListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -200,7 +201,8 @@ export type UserOrderByWithRelationInput = {
   role?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  maintenance?: Prisma.MaintenanceOrderByRelationAggregateInput
+  maintenanceAssigned?: Prisma.MaintenanceOrderByRelationAggregateInput
+  maintenanceHistory?: Prisma.MaintenanceHistoryOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -213,7 +215,8 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   role?: Prisma.StringFilter<"User"> | string
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
-  maintenance?: Prisma.MaintenanceListRelationFilter
+  maintenanceAssigned?: Prisma.MaintenanceListRelationFilter
+  maintenanceHistory?: Prisma.MaintenanceHistoryListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -247,7 +250,8 @@ export type UserCreateInput = {
   role: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  maintenance?: Prisma.MaintenanceCreateNestedManyWithoutUserInput
+  maintenanceAssigned?: Prisma.MaintenanceCreateNestedManyWithoutAssignedToInput
+  maintenanceHistory?: Prisma.MaintenanceHistoryCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -257,7 +261,8 @@ export type UserUncheckedCreateInput = {
   role: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  maintenance?: Prisma.MaintenanceUncheckedCreateNestedManyWithoutUserInput
+  maintenanceAssigned?: Prisma.MaintenanceUncheckedCreateNestedManyWithoutAssignedToInput
+  maintenanceHistory?: Prisma.MaintenanceHistoryUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -267,7 +272,8 @@ export type UserUpdateInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  maintenance?: Prisma.MaintenanceUpdateManyWithoutUserNestedInput
+  maintenanceAssigned?: Prisma.MaintenanceUpdateManyWithoutAssignedToNestedInput
+  maintenanceHistory?: Prisma.MaintenanceHistoryUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -277,7 +283,8 @@ export type UserUncheckedUpdateInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  maintenance?: Prisma.MaintenanceUncheckedUpdateManyWithoutUserNestedInput
+  maintenanceAssigned?: Prisma.MaintenanceUncheckedUpdateManyWithoutAssignedToNestedInput
+  maintenanceHistory?: Prisma.MaintenanceHistoryUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -347,72 +354,148 @@ export type DateTimeFieldUpdateOperationsInput = {
   set?: Date | string
 }
 
-export type UserCreateNestedOneWithoutMaintenanceInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutMaintenanceInput, Prisma.UserUncheckedCreateWithoutMaintenanceInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutMaintenanceInput
+export type UserCreateNestedOneWithoutMaintenanceAssignedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutMaintenanceAssignedInput, Prisma.UserUncheckedCreateWithoutMaintenanceAssignedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutMaintenanceAssignedInput
   connect?: Prisma.UserWhereUniqueInput
 }
 
-export type UserUpdateOneWithoutMaintenanceNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutMaintenanceInput, Prisma.UserUncheckedCreateWithoutMaintenanceInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutMaintenanceInput
-  upsert?: Prisma.UserUpsertWithoutMaintenanceInput
+export type UserUpdateOneWithoutMaintenanceAssignedNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutMaintenanceAssignedInput, Prisma.UserUncheckedCreateWithoutMaintenanceAssignedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutMaintenanceAssignedInput
+  upsert?: Prisma.UserUpsertWithoutMaintenanceAssignedInput
   disconnect?: Prisma.UserWhereInput | boolean
   delete?: Prisma.UserWhereInput | boolean
   connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutMaintenanceInput, Prisma.UserUpdateWithoutMaintenanceInput>, Prisma.UserUncheckedUpdateWithoutMaintenanceInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutMaintenanceAssignedInput, Prisma.UserUpdateWithoutMaintenanceAssignedInput>, Prisma.UserUncheckedUpdateWithoutMaintenanceAssignedInput>
 }
 
-export type UserCreateWithoutMaintenanceInput = {
+export type UserCreateNestedOneWithoutMaintenanceHistoryInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutMaintenanceHistoryInput, Prisma.UserUncheckedCreateWithoutMaintenanceHistoryInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutMaintenanceHistoryInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutMaintenanceHistoryNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutMaintenanceHistoryInput, Prisma.UserUncheckedCreateWithoutMaintenanceHistoryInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutMaintenanceHistoryInput
+  upsert?: Prisma.UserUpsertWithoutMaintenanceHistoryInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutMaintenanceHistoryInput, Prisma.UserUpdateWithoutMaintenanceHistoryInput>, Prisma.UserUncheckedUpdateWithoutMaintenanceHistoryInput>
+}
+
+export type UserCreateWithoutMaintenanceAssignedInput = {
   id?: string
   name: string
   email: string
   role: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  maintenanceHistory?: Prisma.MaintenanceHistoryCreateNestedManyWithoutUserInput
 }
 
-export type UserUncheckedCreateWithoutMaintenanceInput = {
+export type UserUncheckedCreateWithoutMaintenanceAssignedInput = {
   id?: string
   name: string
   email: string
   role: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  maintenanceHistory?: Prisma.MaintenanceHistoryUncheckedCreateNestedManyWithoutUserInput
 }
 
-export type UserCreateOrConnectWithoutMaintenanceInput = {
+export type UserCreateOrConnectWithoutMaintenanceAssignedInput = {
   where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutMaintenanceInput, Prisma.UserUncheckedCreateWithoutMaintenanceInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutMaintenanceAssignedInput, Prisma.UserUncheckedCreateWithoutMaintenanceAssignedInput>
 }
 
-export type UserUpsertWithoutMaintenanceInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutMaintenanceInput, Prisma.UserUncheckedUpdateWithoutMaintenanceInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutMaintenanceInput, Prisma.UserUncheckedCreateWithoutMaintenanceInput>
+export type UserUpsertWithoutMaintenanceAssignedInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutMaintenanceAssignedInput, Prisma.UserUncheckedUpdateWithoutMaintenanceAssignedInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutMaintenanceAssignedInput, Prisma.UserUncheckedCreateWithoutMaintenanceAssignedInput>
   where?: Prisma.UserWhereInput
 }
 
-export type UserUpdateToOneWithWhereWithoutMaintenanceInput = {
+export type UserUpdateToOneWithWhereWithoutMaintenanceAssignedInput = {
   where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutMaintenanceInput, Prisma.UserUncheckedUpdateWithoutMaintenanceInput>
+  data: Prisma.XOR<Prisma.UserUpdateWithoutMaintenanceAssignedInput, Prisma.UserUncheckedUpdateWithoutMaintenanceAssignedInput>
 }
 
-export type UserUpdateWithoutMaintenanceInput = {
+export type UserUpdateWithoutMaintenanceAssignedInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  maintenanceHistory?: Prisma.MaintenanceHistoryUpdateManyWithoutUserNestedInput
 }
 
-export type UserUncheckedUpdateWithoutMaintenanceInput = {
+export type UserUncheckedUpdateWithoutMaintenanceAssignedInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  maintenanceHistory?: Prisma.MaintenanceHistoryUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutMaintenanceHistoryInput = {
+  id?: string
+  name: string
+  email: string
+  role: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  maintenanceAssigned?: Prisma.MaintenanceCreateNestedManyWithoutAssignedToInput
+}
+
+export type UserUncheckedCreateWithoutMaintenanceHistoryInput = {
+  id?: string
+  name: string
+  email: string
+  role: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  maintenanceAssigned?: Prisma.MaintenanceUncheckedCreateNestedManyWithoutAssignedToInput
+}
+
+export type UserCreateOrConnectWithoutMaintenanceHistoryInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutMaintenanceHistoryInput, Prisma.UserUncheckedCreateWithoutMaintenanceHistoryInput>
+}
+
+export type UserUpsertWithoutMaintenanceHistoryInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutMaintenanceHistoryInput, Prisma.UserUncheckedUpdateWithoutMaintenanceHistoryInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutMaintenanceHistoryInput, Prisma.UserUncheckedCreateWithoutMaintenanceHistoryInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutMaintenanceHistoryInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutMaintenanceHistoryInput, Prisma.UserUncheckedUpdateWithoutMaintenanceHistoryInput>
+}
+
+export type UserUpdateWithoutMaintenanceHistoryInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  maintenanceAssigned?: Prisma.MaintenanceUpdateManyWithoutAssignedToNestedInput
+}
+
+export type UserUncheckedUpdateWithoutMaintenanceHistoryInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  maintenanceAssigned?: Prisma.MaintenanceUncheckedUpdateManyWithoutAssignedToNestedInput
 }
 
 
@@ -421,11 +504,13 @@ export type UserUncheckedUpdateWithoutMaintenanceInput = {
  */
 
 export type UserCountOutputType = {
-  maintenance: number
+  maintenanceAssigned: number
+  maintenanceHistory: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  maintenance?: boolean | UserCountOutputTypeCountMaintenanceArgs
+  maintenanceAssigned?: boolean | UserCountOutputTypeCountMaintenanceAssignedArgs
+  maintenanceHistory?: boolean | UserCountOutputTypeCountMaintenanceHistoryArgs
 }
 
 /**
@@ -441,8 +526,15 @@ export type UserCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensi
 /**
  * UserCountOutputType without action
  */
-export type UserCountOutputTypeCountMaintenanceArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type UserCountOutputTypeCountMaintenanceAssignedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.MaintenanceWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountMaintenanceHistoryArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.MaintenanceHistoryWhereInput
 }
 
 
@@ -453,7 +545,8 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   role?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  maintenance?: boolean | Prisma.User$maintenanceArgs<ExtArgs>
+  maintenanceAssigned?: boolean | Prisma.User$maintenanceAssignedArgs<ExtArgs>
+  maintenanceHistory?: boolean | Prisma.User$maintenanceHistoryArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -486,7 +579,8 @@ export type UserSelectScalar = {
 
 export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "role" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  maintenance?: boolean | Prisma.User$maintenanceArgs<ExtArgs>
+  maintenanceAssigned?: boolean | Prisma.User$maintenanceAssignedArgs<ExtArgs>
+  maintenanceHistory?: boolean | Prisma.User$maintenanceHistoryArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -495,7 +589,8 @@ export type UserIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
 export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "User"
   objects: {
-    maintenance: Prisma.$MaintenancePayload<ExtArgs>[]
+    maintenanceAssigned: Prisma.$MaintenancePayload<ExtArgs>[]
+    maintenanceHistory: Prisma.$MaintenanceHistoryPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -898,7 +993,8 @@ readonly fields: UserFieldRefs;
  */
 export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  maintenance<T extends Prisma.User$maintenanceArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$maintenanceArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MaintenancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  maintenanceAssigned<T extends Prisma.User$maintenanceAssignedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$maintenanceAssignedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MaintenancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  maintenanceHistory<T extends Prisma.User$maintenanceHistoryArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$maintenanceHistoryArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MaintenanceHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1327,9 +1423,9 @@ export type UserDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Internal
 }
 
 /**
- * User.maintenance
+ * User.maintenanceAssigned
  */
-export type User$maintenanceArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type User$maintenanceAssignedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
    * Select specific fields to fetch from the Maintenance
    */
@@ -1348,6 +1444,30 @@ export type User$maintenanceArgs<ExtArgs extends runtime.Types.Extensions.Intern
   take?: number
   skip?: number
   distinct?: Prisma.MaintenanceScalarFieldEnum | Prisma.MaintenanceScalarFieldEnum[]
+}
+
+/**
+ * User.maintenanceHistory
+ */
+export type User$maintenanceHistoryArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MaintenanceHistory
+   */
+  select?: Prisma.MaintenanceHistorySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the MaintenanceHistory
+   */
+  omit?: Prisma.MaintenanceHistoryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MaintenanceHistoryInclude<ExtArgs> | null
+  where?: Prisma.MaintenanceHistoryWhereInput
+  orderBy?: Prisma.MaintenanceHistoryOrderByWithRelationInput | Prisma.MaintenanceHistoryOrderByWithRelationInput[]
+  cursor?: Prisma.MaintenanceHistoryWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.MaintenanceHistoryScalarFieldEnum | Prisma.MaintenanceHistoryScalarFieldEnum[]
 }
 
 /**

@@ -46,3 +46,27 @@ export const MaintenanceStatus = {
 } as const
 
 export type MaintenanceStatus = (typeof MaintenanceStatus)[keyof typeof MaintenanceStatus]
+
+
+export const MaintenancePriority = {
+  LOW: 'LOW',
+  MEDIUM: 'MEDIUM',
+  HIGH: 'HIGH',
+  URGENT: 'URGENT'
+} as const
+
+export type MaintenancePriority = (typeof MaintenancePriority)[keyof typeof MaintenancePriority]
+
+
+export const MaintenanceHistoryType = {
+  CREATED: 'CREATED',
+  UPDATED: 'UPDATED',
+  ASSIGNED: 'ASSIGNED',
+  UNASSIGNED: 'UNASSIGNED',
+  PRIORITY_CHANGED: 'PRIORITY_CHANGED',
+  DUE_DATE_CHANGED: 'DUE_DATE_CHANGED',
+  STATUS_CHANGED: 'STATUS_CHANGED',
+  COMPLETED: 'COMPLETED'
+} as const
+
+export type MaintenanceHistoryType = (typeof MaintenanceHistoryType)[keyof typeof MaintenanceHistoryType]
