@@ -31,13 +31,20 @@ model Room {
 }
 
 model Guest {
-  id           String        @id @default(cuid())
-  firstName    String
-  lastName     String
-  email        String?       @unique
-  phone        String?
-  createdAt    DateTime      @default(now())
-  reservations Reservation[]
+  id                String        @id @default(cuid())
+  firstName         String
+  lastName          String
+  email             String?       @unique
+  phone             String?
+  preferredLanguage String?
+  preferredRoomType String?
+  specialRequests   String?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  reservations      Reservation[]
+
+  @@index([lastName])
+  @@index([firstName])
 }
 
 model Reservation {

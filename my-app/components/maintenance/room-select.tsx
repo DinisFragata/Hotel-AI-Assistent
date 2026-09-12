@@ -67,7 +67,7 @@ export default function RoomSelect({
 
       <PopoverContent
         align="start"
-        className="w-[var(--anchor-width)] p-1"
+        className="w-(--anchor-width) p-1"
       >
         <div className="max-h-64 overflow-y-auto">
           <button
