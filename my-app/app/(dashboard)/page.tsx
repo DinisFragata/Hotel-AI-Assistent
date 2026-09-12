@@ -5,6 +5,7 @@ import {
 } from "lucide-react";
 
 import { getDashboardData } from "@/lib/dashboard";
+import GuestActivity from "@/components/dashboard/guest-activity";
 
 import {
   getMaintenanceDueDateLabel,
@@ -172,10 +173,21 @@ function InsightAction({
 export default async function Home() {
   const {
     rooms,
+    guests,
     operations,
     maintenance,
     aiInsights,
   } = await getDashboardData();
+
+  const dashboardGuests = guests.map((guest) => ({
+    ...guest,
+    reservations: guest.reservations.map(
+      (reservation) => ({
+        ...reservation,
+        totalPrice: reservation.totalPrice.toFixed(2),
+      }),
+    ),
+  }));
 
   const { start, end } = getTodayRange();
 
@@ -534,6 +546,11 @@ export default async function Home() {
             )}
           </div>
         </div>
+
+        <div className="mt-6">
+          <GuestActivity guests={dashboardGuests} />
+        </div>
+
         {/* Maintenance overview */}
         <div className="mt-6 glass-surface overflow-hidden rounded-3xl">
           <div className="border-b border-white/10 px-4 py-5 sm:px-6">

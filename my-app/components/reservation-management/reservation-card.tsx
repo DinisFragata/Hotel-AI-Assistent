@@ -1,4 +1,5 @@
 import ReservationCancelDialog from "@/components/reservation-management/reservation-cancel-dialog";
+import ReservationDetailsTrigger from "@/components/reservation-management/reservation-details-trigger";
 import ReservationEditDialog from "@/components/reservation-management/reservation-edit-dialog";
 import ReservationStatusAction from "@/components/reservation-management/reservation-status-action";
 import ReservationStatusBadge from "@/components/reservation-management/reservation-status-badge";
@@ -37,6 +38,7 @@ type ReservationCardProps = {
       firstName: string;
       lastName: string;
       email: string | null;
+      phone?: string | null;
     };
     room: {
       number: string;
@@ -59,6 +61,32 @@ export default function ReservationCard({
   guests,
   rooms,
 }: ReservationCardProps) {
+  const reservationDetails = {
+    id: reservation.id,
+
+    guestId: reservation.guestId,
+
+    guest: {
+      firstName: reservation.guest.firstName,
+      lastName: reservation.guest.lastName,
+      email: reservation.guest.email,
+      phone: reservation.guest.phone ?? null,
+    },
+
+    roomId: reservation.roomId,
+
+    room: {
+      number: reservation.room.number,
+    },
+
+    checkIn: reservation.checkIn.toISOString(),
+    checkOut: reservation.checkOut.toISOString(),
+
+    guestsCount: reservation.guestsCount,
+    totalPrice: reservation.totalPrice,
+    status: reservation.status,
+  };
+
   return (
     <article className="min-w-0 rounded-2xl border border-white/10 bg-white/2.5 p-4 shadow-sm transition-all duration-150 hover:border-white/15 hover:bg-white/4">
       {/* Guest + status */}
@@ -138,25 +166,36 @@ export default function ReservationCard({
         </span>
       </div>
 
+      {/* Details */}
+      <div className="mt-4 border-t border-white/10 pt-4">
+        <ReservationDetailsTrigger
+          reservation={reservationDetails}
+        />
+      </div>
+
       {/* Actions */}
       <div className="mt-4 flex flex-wrap gap-2 border-t border-white/10 pt-4 [&_button]:min-h-9 [&_button]:px-3">
-        <ReservationEditDialog
-          reservation={{
-            id: reservation.id,
-            guestId: reservation.guestId,
-            roomId: reservation.roomId,
-            checkIn: reservation.checkIn
-              .toISOString()
-              .slice(0, 10),
-            checkOut: reservation.checkOut
-              .toISOString()
-              .slice(0, 10),
-            guestsCount: reservation.guestsCount,
-            status: reservation.status,
-          }}
-          guests={guests}
-          rooms={rooms}
-        />
+        {reservation.status !== "CHECKED_OUT" &&
+          reservation.status !== "CANCELLED" && (
+            <ReservationEditDialog
+              reservation={{
+                id: reservation.id,
+                guestId: reservation.guestId,
+                roomId: reservation.roomId,
+                checkIn: reservation.checkIn
+                  .toISOString()
+                  .slice(0, 10),
+                checkOut: reservation.checkOut
+                  .toISOString()
+                  .slice(0, 10),
+                guestsCount:
+                  reservation.guestsCount,
+                status: reservation.status,
+              }}
+              guests={guests}
+              rooms={rooms}
+            />
+          )}
 
         {reservation.status === "PENDING" && (
           <>
@@ -169,8 +208,12 @@ export default function ReservationCard({
               reservationId={reservation.id}
               guestName={`${reservation.guest.firstName} ${reservation.guest.lastName}`}
               roomNumber={reservation.room.number}
-              checkIn={reservation.checkIn.toISOString().slice(0, 10)}
-              checkOut={reservation.checkOut.toISOString().slice(0, 10)}
+              checkIn={reservation.checkIn
+                .toISOString()
+                .slice(0, 10)}
+              checkOut={reservation.checkOut
+                .toISOString()
+                .slice(0, 10)}
               totalPrice={reservation.totalPrice}
             />
           </>
@@ -187,8 +230,12 @@ export default function ReservationCard({
               reservationId={reservation.id}
               guestName={`${reservation.guest.firstName} ${reservation.guest.lastName}`}
               roomNumber={reservation.room.number}
-              checkIn={reservation.checkIn.toISOString().slice(0, 10)}
-              checkOut={reservation.checkOut.toISOString().slice(0, 10)}
+              checkIn={reservation.checkIn
+                .toISOString()
+                .slice(0, 10)}
+              checkOut={reservation.checkOut
+                .toISOString()
+                .slice(0, 10)}
               totalPrice={reservation.totalPrice}
             />
           </>

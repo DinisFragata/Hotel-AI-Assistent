@@ -12,6 +12,7 @@ import {
   Hammer,
   LayoutDashboard,
   Settings,
+  UsersRound,
   X,
   Menu,
 } from "lucide-react";
@@ -31,6 +32,11 @@ const navigation = [
     label: "RESERVATIONS",
     href: "/reservations",
     icon: CalendarDays,
+  },
+  {
+    label: "GUESTS",
+    href: "/guests",
+    icon: UsersRound,
   },
   {
     label: "MAINTENANCE",

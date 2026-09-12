@@ -16,8 +16,35 @@ export async function getDashboardData() {
     }),
 
     prisma.guest.findMany({
-      orderBy: {
-        lastName: "asc",
+      orderBy: [
+        {
+          lastName: "asc",
+        },
+        {
+          firstName: "asc",
+        },
+      ],
+      include: {
+        reservations: {
+          orderBy: {
+            checkIn: "desc",
+          },
+          select: {
+            id: true,
+            guestId: true,
+            roomId: true,
+            checkIn: true,
+            checkOut: true,
+            guestsCount: true,
+            totalPrice: true,
+            status: true,
+            room: {
+              select: {
+                number: true,
+              },
+            },
+          },
+        },
       },
     }),
 
