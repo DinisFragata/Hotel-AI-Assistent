@@ -30,7 +30,11 @@ export type GuestMinAggregateOutputType = {
   lastName: string | null
   email: string | null
   phone: string | null
+  preferredLanguage: string | null
+  preferredRoomType: string | null
+  specialRequests: string | null
   createdAt: Date | null
+  updatedAt: Date | null
 }
 
 export type GuestMaxAggregateOutputType = {
@@ -39,7 +43,11 @@ export type GuestMaxAggregateOutputType = {
   lastName: string | null
   email: string | null
   phone: string | null
+  preferredLanguage: string | null
+  preferredRoomType: string | null
+  specialRequests: string | null
   createdAt: Date | null
+  updatedAt: Date | null
 }
 
 export type GuestCountAggregateOutputType = {
@@ -48,7 +56,11 @@ export type GuestCountAggregateOutputType = {
   lastName: number
   email: number
   phone: number
+  preferredLanguage: number
+  preferredRoomType: number
+  specialRequests: number
   createdAt: number
+  updatedAt: number
   _all: number
 }
 
@@ -59,7 +71,11 @@ export type GuestMinAggregateInputType = {
   lastName?: true
   email?: true
   phone?: true
+  preferredLanguage?: true
+  preferredRoomType?: true
+  specialRequests?: true
   createdAt?: true
+  updatedAt?: true
 }
 
 export type GuestMaxAggregateInputType = {
@@ -68,7 +84,11 @@ export type GuestMaxAggregateInputType = {
   lastName?: true
   email?: true
   phone?: true
+  preferredLanguage?: true
+  preferredRoomType?: true
+  specialRequests?: true
   createdAt?: true
+  updatedAt?: true
 }
 
 export type GuestCountAggregateInputType = {
@@ -77,7 +97,11 @@ export type GuestCountAggregateInputType = {
   lastName?: true
   email?: true
   phone?: true
+  preferredLanguage?: true
+  preferredRoomType?: true
+  specialRequests?: true
   createdAt?: true
+  updatedAt?: true
   _all?: true
 }
 
@@ -159,7 +183,11 @@ export type GuestGroupByOutputType = {
   lastName: string
   email: string | null
   phone: string | null
+  preferredLanguage: string | null
+  preferredRoomType: string | null
+  specialRequests: string | null
   createdAt: Date
+  updatedAt: Date
   _count: GuestCountAggregateOutputType | null
   _min: GuestMinAggregateOutputType | null
   _max: GuestMaxAggregateOutputType | null
@@ -189,7 +217,11 @@ export type GuestWhereInput = {
   lastName?: Prisma.StringFilter<"Guest"> | string
   email?: Prisma.StringNullableFilter<"Guest"> | string | null
   phone?: Prisma.StringNullableFilter<"Guest"> | string | null
+  preferredLanguage?: Prisma.StringNullableFilter<"Guest"> | string | null
+  preferredRoomType?: Prisma.StringNullableFilter<"Guest"> | string | null
+  specialRequests?: Prisma.StringNullableFilter<"Guest"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Guest"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Guest"> | Date | string
   reservations?: Prisma.ReservationListRelationFilter
 }
 
@@ -199,7 +231,11 @@ export type GuestOrderByWithRelationInput = {
   lastName?: Prisma.SortOrder
   email?: Prisma.SortOrderInput | Prisma.SortOrder
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
+  preferredLanguage?: Prisma.SortOrderInput | Prisma.SortOrder
+  preferredRoomType?: Prisma.SortOrderInput | Prisma.SortOrder
+  specialRequests?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   reservations?: Prisma.ReservationOrderByRelationAggregateInput
 }
 
@@ -212,7 +248,11 @@ export type GuestWhereUniqueInput = Prisma.AtLeast<{
   firstName?: Prisma.StringFilter<"Guest"> | string
   lastName?: Prisma.StringFilter<"Guest"> | string
   phone?: Prisma.StringNullableFilter<"Guest"> | string | null
+  preferredLanguage?: Prisma.StringNullableFilter<"Guest"> | string | null
+  preferredRoomType?: Prisma.StringNullableFilter<"Guest"> | string | null
+  specialRequests?: Prisma.StringNullableFilter<"Guest"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Guest"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Guest"> | Date | string
   reservations?: Prisma.ReservationListRelationFilter
 }, "id" | "email">
 
@@ -222,7 +262,11 @@ export type GuestOrderByWithAggregationInput = {
   lastName?: Prisma.SortOrder
   email?: Prisma.SortOrderInput | Prisma.SortOrder
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
+  preferredLanguage?: Prisma.SortOrderInput | Prisma.SortOrder
+  preferredRoomType?: Prisma.SortOrderInput | Prisma.SortOrder
+  specialRequests?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   _count?: Prisma.GuestCountOrderByAggregateInput
   _max?: Prisma.GuestMaxOrderByAggregateInput
   _min?: Prisma.GuestMinOrderByAggregateInput
@@ -237,7 +281,11 @@ export type GuestScalarWhereWithAggregatesInput = {
   lastName?: Prisma.StringWithAggregatesFilter<"Guest"> | string
   email?: Prisma.StringNullableWithAggregatesFilter<"Guest"> | string | null
   phone?: Prisma.StringNullableWithAggregatesFilter<"Guest"> | string | null
+  preferredLanguage?: Prisma.StringNullableWithAggregatesFilter<"Guest"> | string | null
+  preferredRoomType?: Prisma.StringNullableWithAggregatesFilter<"Guest"> | string | null
+  specialRequests?: Prisma.StringNullableWithAggregatesFilter<"Guest"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Guest"> | Date | string
+  updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Guest"> | Date | string
 }
 
 export type GuestCreateInput = {
@@ -246,7 +294,11 @@ export type GuestCreateInput = {
   lastName: string
   email?: string | null
   phone?: string | null
+  preferredLanguage?: string | null
+  preferredRoomType?: string | null
+  specialRequests?: string | null
   createdAt?: Date | string
+  updatedAt?: Date | string
   reservations?: Prisma.ReservationCreateNestedManyWithoutGuestInput
 }
 
@@ -256,7 +308,11 @@ export type GuestUncheckedCreateInput = {
   lastName: string
   email?: string | null
   phone?: string | null
+  preferredLanguage?: string | null
+  preferredRoomType?: string | null
+  specialRequests?: string | null
   createdAt?: Date | string
+  updatedAt?: Date | string
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutGuestInput
 }
 
@@ -266,7 +322,11 @@ export type GuestUpdateInput = {
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredLanguage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredRoomType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  specialRequests?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   reservations?: Prisma.ReservationUpdateManyWithoutGuestNestedInput
 }
 
@@ -276,7 +336,11 @@ export type GuestUncheckedUpdateInput = {
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredLanguage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredRoomType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  specialRequests?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutGuestNestedInput
 }
 
@@ -286,7 +350,11 @@ export type GuestCreateManyInput = {
   lastName: string
   email?: string | null
   phone?: string | null
+  preferredLanguage?: string | null
+  preferredRoomType?: string | null
+  specialRequests?: string | null
   createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type GuestUpdateManyMutationInput = {
@@ -295,7 +363,11 @@ export type GuestUpdateManyMutationInput = {
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredLanguage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredRoomType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  specialRequests?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type GuestUncheckedUpdateManyInput = {
@@ -304,7 +376,11 @@ export type GuestUncheckedUpdateManyInput = {
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredLanguage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredRoomType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  specialRequests?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type GuestCountOrderByAggregateInput = {
@@ -313,7 +389,11 @@ export type GuestCountOrderByAggregateInput = {
   lastName?: Prisma.SortOrder
   email?: Prisma.SortOrder
   phone?: Prisma.SortOrder
+  preferredLanguage?: Prisma.SortOrder
+  preferredRoomType?: Prisma.SortOrder
+  specialRequests?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
 }
 
 export type GuestMaxOrderByAggregateInput = {
@@ -322,7 +402,11 @@ export type GuestMaxOrderByAggregateInput = {
   lastName?: Prisma.SortOrder
   email?: Prisma.SortOrder
   phone?: Prisma.SortOrder
+  preferredLanguage?: Prisma.SortOrder
+  preferredRoomType?: Prisma.SortOrder
+  specialRequests?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
 }
 
 export type GuestMinOrderByAggregateInput = {
@@ -331,7 +415,11 @@ export type GuestMinOrderByAggregateInput = {
   lastName?: Prisma.SortOrder
   email?: Prisma.SortOrder
   phone?: Prisma.SortOrder
+  preferredLanguage?: Prisma.SortOrder
+  preferredRoomType?: Prisma.SortOrder
+  specialRequests?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
 }
 
 export type GuestScalarRelationFilter = {
@@ -363,7 +451,11 @@ export type GuestCreateWithoutReservationsInput = {
   lastName: string
   email?: string | null
   phone?: string | null
+  preferredLanguage?: string | null
+  preferredRoomType?: string | null
+  specialRequests?: string | null
   createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type GuestUncheckedCreateWithoutReservationsInput = {
@@ -372,7 +464,11 @@ export type GuestUncheckedCreateWithoutReservationsInput = {
   lastName: string
   email?: string | null
   phone?: string | null
+  preferredLanguage?: string | null
+  preferredRoomType?: string | null
+  specialRequests?: string | null
   createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type GuestCreateOrConnectWithoutReservationsInput = {
@@ -397,7 +493,11 @@ export type GuestUpdateWithoutReservationsInput = {
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredLanguage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredRoomType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  specialRequests?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type GuestUncheckedUpdateWithoutReservationsInput = {
@@ -406,7 +506,11 @@ export type GuestUncheckedUpdateWithoutReservationsInput = {
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredLanguage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredRoomType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  specialRequests?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 
@@ -446,7 +550,11 @@ export type GuestSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   lastName?: boolean
   email?: boolean
   phone?: boolean
+  preferredLanguage?: boolean
+  preferredRoomType?: boolean
+  specialRequests?: boolean
   createdAt?: boolean
+  updatedAt?: boolean
   reservations?: boolean | Prisma.Guest$reservationsArgs<ExtArgs>
   _count?: boolean | Prisma.GuestCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["guest"]>
@@ -457,7 +565,11 @@ export type GuestSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   lastName?: boolean
   email?: boolean
   phone?: boolean
+  preferredLanguage?: boolean
+  preferredRoomType?: boolean
+  specialRequests?: boolean
   createdAt?: boolean
+  updatedAt?: boolean
 }, ExtArgs["result"]["guest"]>
 
 export type GuestSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -466,7 +578,11 @@ export type GuestSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   lastName?: boolean
   email?: boolean
   phone?: boolean
+  preferredLanguage?: boolean
+  preferredRoomType?: boolean
+  specialRequests?: boolean
   createdAt?: boolean
+  updatedAt?: boolean
 }, ExtArgs["result"]["guest"]>
 
 export type GuestSelectScalar = {
@@ -475,10 +591,14 @@ export type GuestSelectScalar = {
   lastName?: boolean
   email?: boolean
   phone?: boolean
+  preferredLanguage?: boolean
+  preferredRoomType?: boolean
+  specialRequests?: boolean
   createdAt?: boolean
+  updatedAt?: boolean
 }
 
-export type GuestOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "firstName" | "lastName" | "email" | "phone" | "createdAt", ExtArgs["result"]["guest"]>
+export type GuestOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "firstName" | "lastName" | "email" | "phone" | "preferredLanguage" | "preferredRoomType" | "specialRequests" | "createdAt" | "updatedAt", ExtArgs["result"]["guest"]>
 export type GuestInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   reservations?: boolean | Prisma.Guest$reservationsArgs<ExtArgs>
   _count?: boolean | Prisma.GuestCountOutputTypeDefaultArgs<ExtArgs>
@@ -497,7 +617,11 @@ export type $GuestPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     lastName: string
     email: string | null
     phone: string | null
+    preferredLanguage: string | null
+    preferredRoomType: string | null
+    specialRequests: string | null
     createdAt: Date
+    updatedAt: Date
   }, ExtArgs["result"]["guest"]>
   composites: {}
 }
@@ -927,7 +1051,11 @@ export interface GuestFieldRefs {
   readonly lastName: Prisma.FieldRef<"Guest", 'String'>
   readonly email: Prisma.FieldRef<"Guest", 'String'>
   readonly phone: Prisma.FieldRef<"Guest", 'String'>
+  readonly preferredLanguage: Prisma.FieldRef<"Guest", 'String'>
+  readonly preferredRoomType: Prisma.FieldRef<"Guest", 'String'>
+  readonly specialRequests: Prisma.FieldRef<"Guest", 'String'>
   readonly createdAt: Prisma.FieldRef<"Guest", 'DateTime'>
+  readonly updatedAt: Prisma.FieldRef<"Guest", 'DateTime'>
 }
     
 

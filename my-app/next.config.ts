@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  basePath: '/projects/hotel-ai-assistant/demo',
 };
 
 export default nextConfig;

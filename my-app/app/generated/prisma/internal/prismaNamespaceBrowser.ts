@@ -107,7 +107,11 @@ export const GuestScalarFieldEnum = {
   lastName: 'lastName',
   email: 'email',
   phone: 'phone',
-  createdAt: 'createdAt'
+  preferredLanguage: 'preferredLanguage',
+  preferredRoomType: 'preferredRoomType',
+  specialRequests: 'specialRequests',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 } as const
 
 export type GuestScalarFieldEnum = (typeof GuestScalarFieldEnum)[keyof typeof GuestScalarFieldEnum]
@@ -135,6 +139,7 @@ export const OperationScalarFieldEnum = {
   guestName: 'guestName',
   time: 'time',
   roomId: 'roomId',
+  reservationId: 'reservationId',
   createdAt: 'createdAt'
 } as const
 
@@ -146,13 +151,13 @@ export const MaintenanceScalarFieldEnum = {
   title: 'title',
   description: 'description',
   status: 'status',
-  priority: 'priority',
-  dueDate: 'dueDate',
+  createdAt: 'createdAt',
+  completedAt: 'completedAt',
   roomId: 'roomId',
   assignedToId: 'assignedToId',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  completedAt: 'completedAt'
+  dueDate: 'dueDate',
+  priority: 'priority',
+  updatedAt: 'updatedAt'
 } as const
 
 export type MaintenanceScalarFieldEnum = (typeof MaintenanceScalarFieldEnum)[keyof typeof MaintenanceScalarFieldEnum]

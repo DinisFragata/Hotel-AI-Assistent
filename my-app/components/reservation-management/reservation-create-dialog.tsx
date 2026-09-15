@@ -2,7 +2,6 @@
 
 import {
   useActionState,
-  useEffect,
   useMemo,
   useState,
 } from "react";
@@ -25,13 +24,19 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+
 import { toast } from "sonner";
 
-import { LoaderCircle, Plus } from "lucide-react";
+import {
+  LoaderCircle,
+  Plus,
+} from "lucide-react";
 
 import GuestSelect from "@/components/reservation-management/guest-select";
+import ReservationQuickGuest from "@/components/reservation-management/reservation-quick-guest";
 import RoomSelect from "@/components/reservation-management/room-select";
 import StatusSelect from "@/components/reservation-management/status-select";
+
 import type { ReservationStatus } from "@/lib/reservations/status";
 
 const initialState: CreateReservationState = {
@@ -57,6 +62,13 @@ type ReservationCreateDialogProps = {
   rooms: RoomOption[];
 };
 
+type CreatedGuest = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string | null;
+};
+
 export default function ReservationCreateDialog({
   guests,
   rooms,
@@ -64,17 +76,117 @@ export default function ReservationCreateDialog({
   const router = useRouter();
 
   const [open, setOpen] = useState(false);
-  const [selectedGuestId, setSelectedGuestId] = useState("");
-  const [selectedRoomId, setSelectedRoomId] = useState("");
-  const [status, setStatus] = useState<ReservationStatus>("PENDING");
-  const [checkIn, setCheckIn] = useState("");
-  const [checkOut, setCheckOut] = useState("");
-  const [guestsCount, setGuestsCount] = useState("");
 
-  const [state, formAction, isPending] = useActionState(
-    createReservation,
-    initialState,
-  );
+  const [guestOptions, setGuestOptions] =
+    useState<GuestOption[]>(guests);
+
+  const [showQuickGuest, setShowQuickGuest] =
+    useState(false);
+
+  const [selectedGuestId, setSelectedGuestId] =
+    useState("");
+
+  const [selectedRoomId, setSelectedRoomId] =
+    useState("");
+
+  const [status, setStatus] =
+    useState<ReservationStatus>("PENDING");
+
+  const [checkIn, setCheckIn] =
+    useState("");
+
+  const [checkOut, setCheckOut] =
+    useState("");
+
+  const [guestsCount, setGuestsCount] =
+    useState("");
+
+  async function handleCreateReservation(
+    previousState: CreateReservationState,
+    formData: FormData,
+  ) {
+    const result = await createReservation(
+      previousState,
+      formData,
+    );
+
+    if (result.success) {
+      toast.success(result.message);
+
+      setOpen(false);
+
+      resetForm();
+
+      router.refresh();
+    } else if (!result.fieldErrors) {
+      toast.error(result.message);
+    }
+
+    return result;
+  }
+
+  const [state, formAction, isPending] =
+    useActionState(
+      handleCreateReservation,
+      initialState,
+    );
+
+  function resetForm() {
+    setSelectedGuestId("");
+    setSelectedRoomId("");
+    setStatus("PENDING");
+    setCheckIn("");
+    setCheckOut("");
+    setGuestsCount("");
+    setShowQuickGuest(false);
+  }
+
+  function handleOpenChange(nextOpen: boolean) {
+    if (isPending) {
+      return;
+    }
+
+    setOpen(nextOpen);
+
+    if (!nextOpen) {
+      resetForm();
+    }
+  }
+
+  function handleGuestCreated(
+    guest: CreatedGuest,
+  ) {
+    const newGuestOption: GuestOption = {
+      id: guest.id,
+      name: `${guest.firstName} ${guest.lastName}`,
+      email: guest.email,
+    };
+
+    setGuestOptions((currentGuests) => {
+      const alreadyExists = currentGuests.some(
+        (currentGuest) =>
+          currentGuest.id === guest.id,
+      );
+
+      if (alreadyExists) {
+        return currentGuests;
+      }
+
+      return [
+        ...currentGuests,
+        newGuestOption,
+      ].sort((a, b) =>
+        a.name.localeCompare(b.name),
+      );
+    });
+
+    setSelectedGuestId(guest.id);
+    setShowQuickGuest(false);
+  }
+
+  function handleCreateGuestCancel() {
+    setShowQuickGuest(false);
+  }
 
   const canSubmit =
     Boolean(selectedGuestId) &&
@@ -83,46 +195,27 @@ export default function ReservationCreateDialog({
     Boolean(checkOut) &&
     Boolean(guestsCount);
 
-    useEffect(() => {
-        if (!state.message) {
-            return;
-        }
-
-        if (state.success) {
-            toast.success(state.message);
-            router.refresh();
-
-            const timeout = window.setTimeout(() => {
-            setOpen(false);
-            setSelectedGuestId("");
-            setSelectedRoomId("");
-            setCheckIn("");
-            setCheckOut("");
-            setGuestsCount("");
-            }, 0);
-
-            return () => {
-            window.clearTimeout(timeout);
-            };
-        }
-
-        if (!state.fieldErrors) {
-            toast.error(state.message);
-        }
-        }, [state, router]);
-
-
   const estimatedTotal = useMemo(() => {
     const room = rooms.find(
-      (room) => room.id === selectedRoomId,
+      (room) =>
+        room.id === selectedRoomId,
     );
 
-    if (!room || !checkIn || !checkOut) {
+    if (
+      !room ||
+      !checkIn ||
+      !checkOut
+    ) {
       return null;
     }
 
-    const start = new Date(`${checkIn}T00:00:00`);
-    const end = new Date(`${checkOut}T00:00:00`);
+    const start = new Date(
+      `${checkIn}T00:00:00`,
+    );
+
+    const end = new Date(
+      `${checkOut}T00:00:00`,
+    );
 
     const difference =
       end.getTime() - start.getTime();
@@ -145,21 +238,34 @@ export default function ReservationCreateDialog({
       nights,
       total,
     };
-  }, [rooms, selectedRoomId, checkIn, checkOut]);
+  }, [
+    rooms,
+    selectedRoomId,
+    checkIn,
+    checkOut,
+  ]);
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={<Button />}>
+    <Dialog
+      open={open}
+      onOpenChange={handleOpenChange}
+    >
+      <DialogTrigger
+        render={<Button />}
+      >
         <Plus />
         Add Reservation
       </DialogTrigger>
 
-      <DialogContent className="w-[calc(100%-2rem)] sm:max-w-lg max-h-[calc(100vh-2rem)] overflow-y-auto">
+      <DialogContent className="w-[calc(100%-2rem)] max-h-[calc(100vh-2rem)] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>Add Reservation</DialogTitle>
+          <DialogTitle>
+            Add Reservation
+          </DialogTitle>
 
           <DialogDescription>
-            Create a new reservation for a hotel guest.
+            Create a new reservation for a
+            hotel guest.
           </DialogDescription>
         </DialogHeader>
 
@@ -175,7 +281,9 @@ export default function ReservationCreateDialog({
             <div className="space-y-2">
               <Label htmlFor="guestId">
                 Guest{" "}
-                <span className="text-destructive">*</span>
+                <span className="text-destructive">
+                  *
+                </span>
               </Label>
 
               <input
@@ -184,29 +292,49 @@ export default function ReservationCreateDialog({
                 value={selectedGuestId}
               />
 
-              <GuestSelect
-                guests={guests}
-                value={selectedGuestId}
-                onValueChange={setSelectedGuestId}
-                disabled={isPending}
-                hasError={Boolean(state.fieldErrors?.guestId)}
-                placeholder="Select a guest"
-              />
-
-              {state.fieldErrors?.guestId && (
-                <p
-                  className="text-sm text-destructive"
-                  id="guestId-error"
-                >
-                  {state.fieldErrors.guestId[0]}
-                </p>
+              {showQuickGuest ? (
+                <ReservationQuickGuest
+                  onCreated={handleGuestCreated}
+                  onCancel={handleCreateGuestCancel}
+                />
+              ) : (
+                <GuestSelect
+                  guests={guestOptions}
+                  value={selectedGuestId}
+                  onValueChange={setSelectedGuestId}
+                  disabled={isPending}
+                  hasError={Boolean(
+                    state.fieldErrors?.guestId,
+                  )}
+                  placeholder="Select a guest"
+                  onCreateGuest={() =>
+                    setShowQuickGuest(true)
+                  }
+                />
               )}
+
+              {!showQuickGuest &&
+                state.fieldErrors
+                  ?.guestId && (
+                  <p
+                    className="text-sm text-destructive"
+                    id="guestId-error"
+                  >
+                    {
+                      state.fieldErrors
+                        .guestId[0]
+                    }
+                  </p>
+                )}
             </div>
 
             {/* Room */}
             <div className="space-y-2">
               <Label htmlFor="roomId">
-                Room <span className="text-destructive">*</span>
+                Room{" "}
+                <span className="text-destructive">
+                  *
+                </span>
               </Label>
 
               <input
@@ -218,9 +346,14 @@ export default function ReservationCreateDialog({
               <RoomSelect
                 rooms={rooms}
                 value={selectedRoomId}
-                onValueChange={setSelectedRoomId}
+                onValueChange={
+                  setSelectedRoomId
+                }
                 disabled={isPending}
-                hasError={Boolean(state.fieldErrors?.roomId)}
+                hasError={Boolean(
+                  state.fieldErrors
+                    ?.roomId,
+                )}
                 placeholder="Select a room"
               />
 
@@ -229,17 +362,23 @@ export default function ReservationCreateDialog({
                   className="text-sm text-destructive"
                   id="roomId-error"
                 >
-                  {state.fieldErrors.roomId[0]}
+                  {
+                    state.fieldErrors
+                      .roomId[0]
+                  }
                 </p>
               )}
             </div>
 
             {/* Dates */}
             <div className="grid gap-5 sm:grid-cols-2">
+              {/* Check-in */}
               <div className="space-y-2">
                 <Label htmlFor="checkIn">
                   Check-in{" "}
-                  <span className="text-destructive">*</span>
+                  <span className="text-destructive">
+                    *
+                  </span>
                 </Label>
 
                 <Input
@@ -248,13 +387,17 @@ export default function ReservationCreateDialog({
                   type="date"
                   value={checkIn}
                   onChange={(event) =>
-                    setCheckIn(event.target.value)
+                    setCheckIn(
+                      event.target.value,
+                    )
                   }
                   aria-invalid={Boolean(
-                    state.fieldErrors?.checkIn,
+                    state.fieldErrors
+                      ?.checkIn,
                   )}
                   className={
-                    state.fieldErrors?.checkIn
+                    state.fieldErrors
+                      ?.checkIn
                       ? "border-destructive"
                       : ""
                   }
@@ -266,15 +409,21 @@ export default function ReservationCreateDialog({
                     className="text-sm text-destructive"
                     id="checkIn-error"
                   >
-                    {state.fieldErrors.checkIn[0]}
+                    {
+                      state.fieldErrors
+                        .checkIn[0]
+                    }
                   </p>
                 )}
               </div>
 
+              {/* Check-out */}
               <div className="space-y-2">
                 <Label htmlFor="checkOut">
                   Check-out{" "}
-                  <span className="text-destructive">*</span>
+                  <span className="text-destructive">
+                    *
+                  </span>
                 </Label>
 
                 <Input
@@ -283,13 +432,17 @@ export default function ReservationCreateDialog({
                   type="date"
                   value={checkOut}
                   onChange={(event) =>
-                    setCheckOut(event.target.value)
+                    setCheckOut(
+                      event.target.value,
+                    )
                   }
                   aria-invalid={Boolean(
-                    state.fieldErrors?.checkOut,
+                    state.fieldErrors
+                      ?.checkOut,
                   )}
                   className={
-                    state.fieldErrors?.checkOut
+                    state.fieldErrors
+                      ?.checkOut
                       ? "border-destructive"
                       : ""
                   }
@@ -301,7 +454,10 @@ export default function ReservationCreateDialog({
                     className="text-sm text-destructive"
                     id="checkOut-error"
                   >
-                    {state.fieldErrors.checkOut[0]}
+                    {
+                      state.fieldErrors
+                        .checkOut[0]
+                    }
                   </p>
                 )}
               </div>
@@ -311,7 +467,9 @@ export default function ReservationCreateDialog({
             <div className="space-y-2">
               <Label htmlFor="guestsCount">
                 Number of guests{" "}
-                <span className="text-destructive">*</span>
+                <span className="text-destructive">
+                  *
+                </span>
               </Label>
 
               <Input
@@ -322,25 +480,33 @@ export default function ReservationCreateDialog({
                 placeholder="e.g. 2"
                 value={guestsCount}
                 onChange={(event) =>
-                  setGuestsCount(event.target.value)
+                  setGuestsCount(
+                    event.target.value,
+                  )
                 }
                 aria-invalid={Boolean(
-                  state.fieldErrors?.guestsCount,
+                  state.fieldErrors
+                    ?.guestsCount,
                 )}
                 className={
-                  state.fieldErrors?.guestsCount
+                  state.fieldErrors
+                    ?.guestsCount
                     ? "border-destructive"
                     : ""
                 }
                 required
               />
 
-              {state.fieldErrors?.guestsCount && (
+              {state.fieldErrors
+                ?.guestsCount && (
                 <p
                   className="text-sm text-destructive"
                   id="guestsCount-error"
                 >
-                  {state.fieldErrors.guestsCount[0]}
+                  {
+                    state.fieldErrors
+                      .guestsCount[0]
+                  }
                 </p>
               )}
             </div>
@@ -349,7 +515,9 @@ export default function ReservationCreateDialog({
             <div className="space-y-2">
               <Label htmlFor="status">
                 Status{" "}
-                <span className="text-destructive">*</span>
+                <span className="text-destructive">
+                  *
+                </span>
               </Label>
 
               <input
@@ -361,9 +529,15 @@ export default function ReservationCreateDialog({
               <StatusSelect
                 value={status}
                 onValueChange={setStatus}
-                allowedStatuses={["PENDING", "CONFIRMED"]}
+                allowedStatuses={[
+                  "PENDING",
+                  "CONFIRMED",
+                ]}
                 disabled={isPending}
-                hasError={Boolean(state.fieldErrors?.status)}
+                hasError={Boolean(
+                  state.fieldErrors
+                    ?.status,
+                )}
               />
 
               {state.fieldErrors?.status && (
@@ -371,7 +545,10 @@ export default function ReservationCreateDialog({
                   className="text-sm text-destructive"
                   id="status-error"
                 >
-                  {state.fieldErrors.status[0]}
+                  {
+                    state.fieldErrors
+                      .status[0]
+                  }
                 </p>
               )}
             </div>
@@ -386,8 +563,11 @@ export default function ReservationCreateDialog({
 
                   {estimatedTotal && (
                     <p className="mt-1 text-xs text-muted-foreground">
-                      {estimatedTotal.nights}{" "}
-                      {estimatedTotal.nights === 1
+                      {
+                        estimatedTotal.nights
+                      }{" "}
+                      {estimatedTotal.nights ===
+                      1
                         ? "night"
                         : "nights"}{" "}
                       × selected room rate
@@ -397,7 +577,9 @@ export default function ReservationCreateDialog({
 
                 <span className="text-base font-semibold tabular-nums">
                   {estimatedTotal
-                    ? `€${estimatedTotal.total.toFixed(2)}`
+                    ? `€${estimatedTotal.total.toFixed(
+                        2,
+                      )}`
                     : "Select room and dates"}
                 </span>
               </div>
@@ -418,7 +600,9 @@ export default function ReservationCreateDialog({
             <Button
               type="button"
               variant="outline"
-              onClick={() => setOpen(false)}
+              onClick={() =>
+                setOpen(false)
+              }
               disabled={isPending}
             >
               Cancel
@@ -426,7 +610,9 @@ export default function ReservationCreateDialog({
 
             <Button
               type="submit"
-              disabled={isPending || !canSubmit}
+              disabled={
+                isPending || !canSubmit
+              }
             >
               {isPending ? (
                 <>

@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+
 import ReservationCreateDialog from "@/components/reservation-management/reservation-create-dialog";
 import ReservationEditDialog from "@/components/reservation-management/reservation-edit-dialog";
 import ReservationCancelDialog from "@/components/reservation-management/reservation-cancel-dialog";
@@ -8,9 +9,10 @@ import ReservationStatusFilter from "@/components/reservation-management/reserva
 import ReservationDateFilter from "@/components/reservation-management/reservation-date-filter";
 import ReservationFilterProvider from "@/components/reservation-management/reservation-filter-provider";
 import ReservationResults from "@/components/reservation-management/reservation-results";
-
 import ReservationCard from "@/components/reservation-management/reservation-card";
 import ReservationStatusBadge from "@/components/reservation-management/reservation-status-badge";
+import ReservationGuestCell from "@/components/reservation-management/reservation-guest-cell";
+import ReservationDetailsTrigger from "@/components/reservation-management/reservation-details-trigger";
 
 import {
   parseReservationDateFilter,
@@ -26,14 +28,17 @@ export default async function ReservationsPage({
     date?: string;
   }>;
 }) {
-
   const params = await searchParams;
 
   const search = params.search?.trim() ?? "";
 
-  const selectedStatus = parseReservationStatus(params.status,);
+  const selectedStatus = parseReservationStatus(
+    params.status,
+  );
 
-  const selectedDate = parseReservationDateFilter(params.date,);
+  const selectedDate = parseReservationDateFilter(
+    params.date,
+  );
 
   const hasSearchFilter = Boolean(search);
   const hasStatusFilter = Boolean(selectedStatus);
@@ -56,55 +61,59 @@ export default async function ReservationsPage({
   todayStart.setHours(0, 0, 0, 0);
 
   const tomorrowStart = new Date(todayStart);
-  tomorrowStart.setDate(tomorrowStart.getDate() + 1);
+  tomorrowStart.setDate(
+    tomorrowStart.getDate() + 1,
+  );
 
-  const [reservations, guests, rooms] = await Promise.all([
-    prisma.reservation.findMany({
-      where: {
-        ...(search
-          ? {
-              OR: [
-                {
-                  guest: {
-                    firstName: {
-                      contains: search,
-                      mode: "insensitive",
+  const [reservations, guests, rooms] =
+    await Promise.all([
+      prisma.reservation.findMany({
+        where: {
+          ...(search
+            ? {
+                OR: [
+                  {
+                    guest: {
+                      firstName: {
+                        contains: search,
+                        mode: "insensitive",
+                      },
                     },
                   },
-                },
-                {
-                  guest: {
-                    lastName: {
-                      contains: search,
-                      mode: "insensitive",
+                  {
+                    guest: {
+                      lastName: {
+                        contains: search,
+                        mode: "insensitive",
+                      },
                     },
                   },
-                },
-                {
-                  guest: {
-                    email: {
-                      contains: search,
-                      mode: "insensitive",
+                  {
+                    guest: {
+                      email: {
+                        contains: search,
+                        mode: "insensitive",
+                      },
                     },
                   },
-                },
-                {
-                  room: {
-                    number: {
-                      contains: search,
-                      mode: "insensitive",
+                  {
+                    room: {
+                      number: {
+                        contains: search,
+                        mode: "insensitive",
+                      },
                     },
                   },
-                },
-              ],
-            }
-          : {}),
+                ],
+              }
+            : {}),
 
-        ...(selectedStatus
-          ? {
-              status: selectedStatus,
-            }
-          : {}),
+          ...(selectedStatus
+            ? {
+                status: selectedStatus,
+              }
+            : {}),
+
           ...(selectedDate === "UPCOMING"
             ? {
                 checkIn: {
@@ -131,42 +140,125 @@ export default async function ReservationsPage({
                 },
               }
             : {}),
-      },
-
-      include: {
-        guest: true,
-        room: true,
-      },
-
-      orderBy: {
-        checkIn: "asc",
-      },
-    }),
-
-    prisma.guest.findMany({
-      orderBy: [
-        {
-          firstName: "asc",
         },
-        {
-          lastName: "asc",
+
+        include: {
+          guest: true,
+          room: true,
         },
-      ],
-    }),
 
-    prisma.room.findMany({
-      orderBy: {
-        number: "asc",
+        orderBy: {
+          checkIn: "asc",
+        },
+      }),
+
+      prisma.guest.findMany({
+        orderBy: [
+          {
+            firstName: "asc",
+          },
+          {
+            lastName: "asc",
+          },
+        ],
+
+        include: {
+          _count: {
+            select: {
+              reservations: true,
+            },
+          },
+
+          reservations: {
+            orderBy: {
+              checkIn: "desc",
+            },
+
+            select: {
+              id: true,
+              guestId: true,
+              roomId: true,
+              checkIn: true,
+              checkOut: true,
+              guestsCount: true,
+              totalPrice: true,
+              status: true,
+
+              room: {
+                select: {
+                  number: true,
+                },
+              },
+            },
+          },
+        },
+      }),
+
+      prisma.room.findMany({
+        orderBy: {
+          number: "asc",
+        },
+      }),
+    ]);
+
+  const guestDetailsById = new Map(
+    guests.map((guest) => [
+      guest.id,
+      {
+        id: guest.id,
+        firstName: guest.firstName,
+        lastName: guest.lastName,
+        email: guest.email,
+        phone: guest.phone,
+        preferredLanguage:
+          guest.preferredLanguage,
+        preferredRoomType:
+          guest.preferredRoomType,
+        specialRequests:
+          guest.specialRequests,
+        reservationCount:
+          guest._count.reservations,
+
+        reservations: guest.reservations.map(
+          (reservation) => ({
+            id: reservation.id,
+            guestId: reservation.guestId,
+            roomId: reservation.roomId,
+            roomNumber: reservation.room.number,
+            checkIn:
+              reservation.checkIn.toISOString(),
+            checkOut:
+              reservation.checkOut.toISOString(),
+            guestsCount:
+              reservation.guestsCount,
+            totalPrice:
+              reservation.totalPrice.toFixed(2),
+            status: reservation.status,
+          }),
+        ),
       },
-    }),
-  ]);
+    ]),
+  );
 
-  const reservationRows = reservations.map((reservation) => ({
-    ...reservation,
-    totalPrice: reservation.totalPrice.toFixed(2),
-    checkInInput: formatInputDate(reservation.checkIn),
-    checkOutInput: formatInputDate(reservation.checkOut),
-  }));
+  const reservationRows =
+    reservations.map((reservation) => ({
+      ...reservation,
+      totalPrice:
+        reservation.totalPrice.toFixed(2),
+
+      checkInInput: formatInputDate(
+        reservation.checkIn,
+      ),
+
+      checkOutInput: formatInputDate(
+        reservation.checkOut,
+      ),
+
+      guestDetails:
+        guestDetailsById.get(
+          reservation.guestId,
+        ) ?? null,
+    }));
 
   const guestOptions = guests.map((guest) => ({
     id: guest.id,
@@ -178,13 +270,14 @@ export default async function ReservationsPage({
     id: room.id,
     number: room.number,
     capacity: room.capacity,
-    pricePerNight: room.pricePerNight.toFixed(2),
+    pricePerNight:
+      room.pricePerNight.toFixed(2),
   }));
 
   return (
     <section className="relative min-h-screen px-4 pb-8 pt-6 sm:px-6 sm:pb-10 sm:pt-8 lg:px-10 lg:pt-10">
       <div className="mx-auto max-w-350">
-        <div className="mb-10 flex items-end justify-between gap-6 sm:mb-10">
+        <div className="mb-8 flex flex-col gap-6 sm:mb-10 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">
               Property Management
@@ -194,248 +287,382 @@ export default async function ReservationsPage({
               Reservations
             </h1>
 
-            <p className="mt-3 max-w-2xl text-base leading-[1.6] text-muted-foreground">
-              Manage guest reservations, booking dates and reservation status.
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base sm:leading-[1.6]">
+              Manage guest reservations,
+              booking dates and reservation
+              status.
             </p>
           </div>
 
-          <ReservationCreateDialog
-            guests={guestOptions}
-            rooms={roomOptions}
-          />
+          <div className="shrink-0">
+            <ReservationCreateDialog
+              guests={guestOptions}
+              rooms={roomOptions}
+            />
+          </div>
         </div>
 
         <ReservationFilterProvider>
-        <div className="glass-surface overflow-hidden rounded-3xl">
-          <div className="flex flex-col gap-4 border-b border-white/10 px-6 py-5 md:flex-row md:items-center md:justify-between">
-            <div>
-              <h2 className="text-lg font-semibold">
-                Reservations
-              </h2>
+          <div className="glass-surface overflow-hidden rounded-3xl">
+            <div className="flex flex-col gap-4 border-b border-white/10 px-6 py-5 md:flex-row md:items-center md:justify-between">
+              <div>
+                <h2 className="text-lg font-semibold">
+                  Reservations
+                </h2>
 
-              <p className="mt-1 text-sm text-muted-foreground">
-                {reservationRows.length}{" "}
-                {reservationRows.length === 1
-                  ? "reservation"
-                  : "reservations"}{" "}
-                {hasFilters
-                  ? "matching your filters"
-                  : "registered"}
-              </p>
-            </div>
-
-            <div className="w-full md:w-auto">
-              <div className="flex w-full flex-col gap-3 md:flex-row md:items-center">
-                <div className="min-w-0 flex-1 md:w-72 md:flex-none">
-                  <ReservationSearch
-                    initialSearch={search}
-                  />
-                </div>
-
-                <div className="grid w-full grid-cols-2 gap-3 md:w-auto md:flex md:gap-3">
-                  <ReservationStatusFilter
-                    initialStatus={statusValue}
-                  />
-
-                  <ReservationDateFilter
-                    initialDate={dateValue}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <ReservationResults>
-          {reservationRows.length === 0 ? (
-            <div className="flex min-h-60 items-center justify-center">
-              <div className="max-w-sm text-center">
-                <h3 className="font-medium">
-                  {search
-                    ? "No matching reservations"
-                    : "No reservations yet"}
-                </h3>
-
-                <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                  {search
-                    ? `No reservations were found for the selected filters.`
-                    : "Create your first reservation to start managing hotel bookings."}
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {reservationRows.length}{" "}
+                  {reservationRows.length === 1
+                    ? "reservation"
+                    : "reservations"}{" "}
+                  {hasFilters
+                    ? "matching your filters"
+                    : "registered"}
                 </p>
               </div>
-            </div>
-          ) : (
-              <>
-                {/* Desktop table */}
-                <div className="hidden overflow-x-auto md:block">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b border-white/10">
-                        <th className="px-6 py-4 text-left text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                          Guest
-                        </th>
 
-                        <th className="px-4 py-4 text-left text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                          Room
-                        </th>
-
-                        <th className="px-4 py-4 text-left text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                          Check-in
-                        </th>
-
-                        <th className="px-4 py-4 text-left text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                          Check-out
-                        </th>
-
-                        <th className="px-4 py-4 text-left text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                          Guests
-                        </th>
-
-                        <th className="px-4 py-4 text-left text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                          Total
-                        </th>
-
-                        <th className="px-6 py-4 text-left text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                          Status
-                        </th>
-
-                        <th className="w-32 px-6 py-4 text-right text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                          Actions
-                        </th>
-                      </tr>
-                    </thead>
-
-                    <tbody>
-                      {reservationRows.map((reservation) => (
-                        <tr
-                          key={reservation.id}
-                          className="border-b border-white/10 last:border-0 transition-colors duration-150 hover:bg-white/1.5"
-                        >
-                          <td className="px-6 py-4">
-                            <div>
-                              <p className="font-medium leading-5">
-                                {reservation.guest.firstName}{" "}
-                                {reservation.guest.lastName}
-                              </p>
-
-                              {reservation.guest.email && (
-                                <p className="mt-0.5 truncate text-xs text-muted-foreground">
-                                  {reservation.guest.email}
-                                </p>
-                              )}
-                            </div>
-                          </td>
-
-                          <td className="px-4 py-4 font-medium">
-                            {reservation.room.number}
-                          </td>
-
-                          <td className="px-4 py-4 text-muted-foreground">
-                            {formatDate(reservation.checkIn)}
-                          </td>
-
-                          <td className="px-4 py-4 text-muted-foreground">
-                            {formatDate(reservation.checkOut)}
-                          </td>
-
-                          <td className="px-4 py-4 text-muted-foreground">
-                            {reservation.guestsCount}{" "}
-                            {reservation.guestsCount === 1
-                              ? "guest"
-                              : "guests"}
-                          </td>
-
-                          <td className="px-4 py-4 font-medium">
-                            €{reservation.totalPrice}
-                          </td>
-
-                          <td className="px-6 py-4">
-                            <ReservationStatusBadge
-                              status={reservation.status}
-                            />
-                          </td>
-
-                          <td className="px-6 py-4">
-                            <div className="flex justify-end gap-2">
-                              {reservation.status !== "CHECKED_OUT" && reservation.status !== "CANCELLED" && (
-                                <ReservationEditDialog
-                                  reservation={{
-                                    id: reservation.id,
-                                    guestId: reservation.guestId,
-                                    roomId: reservation.roomId,
-                                    checkIn: reservation.checkInInput,
-                                    checkOut: reservation.checkOutInput,
-                                    guestsCount: reservation.guestsCount,
-                                    status: reservation.status,
-                                  }}
-                                  guests={guestOptions}
-                                  rooms={roomOptions}
-                                />
-                              )}
-
-                              {reservation.status === "PENDING" && (
-                                <>
-                                  <ReservationStatusAction
-                                    reservationId={reservation.id}
-                                    targetStatus="CONFIRMED"
-                                  />
-
-                                  <ReservationCancelDialog
-                                    reservationId={reservation.id}
-                                    guestName={`${reservation.guest.firstName} ${reservation.guest.lastName}`}
-                                    roomNumber={reservation.room.number}
-                                    checkIn={reservation.checkInInput}
-                                    checkOut={reservation.checkOutInput}
-                                    totalPrice={reservation.totalPrice}
-                                  />
-                                </>
-                              )}
-
-                              {reservation.status === "CONFIRMED" && (
-                                <>
-                                  <ReservationStatusAction
-                                    reservationId={reservation.id}
-                                    targetStatus="CHECKED_IN"
-                                  />
-
-                                  <ReservationCancelDialog
-                                    reservationId={reservation.id}
-                                    guestName={`${reservation.guest.firstName} ${reservation.guest.lastName}`}
-                                    roomNumber={reservation.room.number}
-                                    checkIn={reservation.checkInInput}
-                                    checkOut={reservation.checkOutInput}
-                                    totalPrice={reservation.totalPrice}
-                                  />
-                                </>
-                              )}
-
-                              {reservation.status === "CHECKED_IN" && (
-                                <ReservationStatusAction
-                                  reservationId={reservation.id}
-                                  targetStatus="CHECKED_OUT"
-                                />
-                              )}
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-
-                {/* Mobile cards */}
-                <div className="space-y-3 p-4 md:hidden">
-                  {reservationRows.map((reservation) => (
-                    <ReservationCard
-                      key={reservation.id}
-                      reservation={reservation}
-                      guests={guestOptions}
-                      rooms={roomOptions}
+              <div className="w-full md:w-auto">
+                <div className="flex w-full flex-col gap-3 md:flex-row md:items-center">
+                  <div className="min-w-0 flex-1 md:w-72 md:flex-none">
+                    <ReservationSearch
+                      initialSearch={search}
                     />
-                  ))}
+                  </div>
+
+                  <div className="grid w-full grid-cols-2 gap-3 md:w-auto md:flex md:gap-3">
+                    <ReservationStatusFilter
+                      initialStatus={statusValue}
+                    />
+
+                    <ReservationDateFilter
+                      initialDate={dateValue}
+                    />
+                  </div>
                 </div>
-              </>
-            )}
-          </ReservationResults>
-        </div>
+              </div>
+            </div>
+
+            <ReservationResults>
+              {reservationRows.length === 0 ? (
+                <div className="flex min-h-60 items-center justify-center px-4">
+                  <div className="max-w-sm text-center">
+                    <h3 className="font-medium">
+                      {hasFilters
+                        ? "No matching reservations"
+                        : "No reservations yet"}
+                    </h3>
+
+                    <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                      {hasFilters
+                        ? "No reservations were found for the selected filters."
+                        : "Create your first reservation to start managing hotel bookings."}
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  {/* Desktop table */}
+                  <div className="hidden overflow-x-auto md:block">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-white/10">
+                          <th className="px-6 py-4 text-left text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                            Guest
+                          </th>
+
+                          <th className="px-4 py-4 text-left text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                            Room
+                          </th>
+
+                          <th className="px-4 py-4 text-left text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                            Check-in
+                          </th>
+
+                          <th className="px-4 py-4 text-left text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                            Check-out
+                          </th>
+
+                          <th className="px-4 py-4 text-left text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                            Guests
+                          </th>
+
+                          <th className="px-4 py-4 text-left text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                            Total
+                          </th>
+
+                          <th className="px-6 py-4 text-left text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                            Status
+                          </th>
+
+                          <th className="min-w-70 px-6 py-4 text-right text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                            Actions
+                          </th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        {reservationRows.map(
+                          (reservation) => (
+                            <tr
+                              key={reservation.id}
+                              className="border-b border-white/10 last:border-0 transition-colors duration-150 hover:bg-white/1.5"
+                            >
+                              <td className="px-6 py-4">
+                                {reservation.guestDetails ? (
+                                  <ReservationGuestCell
+                                    guest={ reservation.guestDetails}
+                                  />
+                                ) : (
+                                  <div>
+                                    <p className="font-medium leading-5">
+                                      {
+                                        reservation
+                                          .guest
+                                          .firstName
+                                      }{" "}
+                                      {
+                                        reservation
+                                          .guest
+                                          .lastName
+                                      }
+                                    </p>
+
+                                    {reservation
+                                      .guest
+                                      .email && (
+                                      <p className="mt-0.5 truncate text-xs text-muted-foreground">
+                                        {
+                                          reservation
+                                            .guest
+                                            .email
+                                        }
+                                      </p>
+                                    )}
+                                  </div>
+                                )}
+                              </td>
+
+                              <td className="px-4 py-4 font-medium">
+                                {reservation.room.number}
+                              </td>
+
+                              <td className="px-4 py-4 text-muted-foreground">
+                                {formatDate(
+                                  reservation.checkIn,
+                                )}
+                              </td>
+
+                              <td className="px-4 py-4 text-muted-foreground">
+                                {formatDate(
+                                  reservation.checkOut,
+                                )}
+                              </td>
+
+                              <td className="px-4 py-4 text-muted-foreground">
+                                {
+                                  reservation.guestsCount
+                                }{" "}
+                                {
+                                  reservation.guestsCount ===
+                                  1
+                                    ? "guest"
+                                    : "guests"
+                                }
+                              </td>
+
+                              <td className="px-4 py-4 font-medium">
+                                €
+                                {
+                                  reservation.totalPrice
+                                }
+                              </td>
+
+                              <td className="px-6 py-4">
+                                <ReservationStatusBadge
+                                  status={
+                                    reservation.status
+                                  }
+                                />
+                              </td>
+
+                              <td className="px-6 py-4">
+                                <div className="flex flex-wrap justify-end gap-2">
+                                  <ReservationDetailsTrigger
+                                    reservation={{
+                                      id: reservation.id,
+                                      guestId:
+                                        reservation.guestId,
+                                      guest: {
+                                        firstName:
+                                          reservation
+                                            .guest
+                                            .firstName,
+                                        lastName:
+                                          reservation
+                                            .guest
+                                            .lastName,
+                                        email:
+                                          reservation
+                                            .guest
+                                            .email,
+                                        phone:
+                                          reservation
+                                            .guest
+                                            .phone ??
+                                          null,
+                                      },
+                                      roomId:
+                                        reservation.roomId,
+                                      room: {
+                                        number:
+                                          reservation
+                                            .room
+                                            .number,
+                                      },
+                                      checkIn:
+                                        reservation.checkIn.toISOString(),
+                                      checkOut:
+                                        reservation.checkOut.toISOString(),
+                                      guestsCount:
+                                        reservation.guestsCount,
+                                      totalPrice:
+                                        reservation.totalPrice,
+                                      status:
+                                        reservation.status,
+                                    }}
+                                    label="Details"
+                                  />
+
+                                  {reservation.status !==
+                                    "CHECKED_OUT" &&
+                                    reservation.status !==
+                                      "CANCELLED" && (
+                                      <ReservationEditDialog
+                                        reservation={{
+                                          id: reservation.id,
+                                          guestId:
+                                            reservation.guestId,
+                                          roomId:
+                                            reservation.roomId,
+                                          checkIn:
+                                            reservation.checkInInput,
+                                          checkOut:
+                                            reservation.checkOutInput,
+                                          guestsCount:
+                                            reservation.guestsCount,
+                                          status:
+                                            reservation.status,
+                                        }}
+                                        guests={
+                                          guestOptions
+                                        }
+                                        rooms={
+                                          roomOptions
+                                        }
+                                      />
+                                    )}
+
+                                  {reservation.status ===
+                                    "PENDING" && (
+                                    <>
+                                      <ReservationStatusAction
+                                        reservationId={
+                                          reservation.id
+                                        }
+                                        targetStatus="CONFIRMED"
+                                      />
+
+                                      <ReservationCancelDialog
+                                        reservationId={
+                                          reservation.id
+                                        }
+                                        guestName={`${reservation.guest.firstName} ${reservation.guest.lastName}`}
+                                        roomNumber={
+                                          reservation
+                                            .room
+                                            .number
+                                        }
+                                        checkIn={
+                                          reservation.checkInInput
+                                        }
+                                        checkOut={
+                                          reservation.checkOutInput
+                                        }
+                                        totalPrice={
+                                          reservation.totalPrice
+                                        }
+                                      />
+                                    </>
+                                  )}
+
+                                  {reservation.status ===
+                                    "CONFIRMED" && (
+                                    <>
+                                      <ReservationStatusAction
+                                        reservationId={
+                                          reservation.id
+                                        }
+                                        targetStatus="CHECKED_IN"
+                                      />
+
+                                      <ReservationCancelDialog
+                                        reservationId={
+                                          reservation.id
+                                        }
+                                        guestName={`${reservation.guest.firstName} ${reservation.guest.lastName}`}
+                                        roomNumber={
+                                          reservation
+                                            .room
+                                            .number
+                                        }
+                                        checkIn={
+                                          reservation.checkInInput
+                                        }
+                                        checkOut={
+                                          reservation.checkOutInput
+                                        }
+                                        totalPrice={
+                                          reservation.totalPrice
+                                        }
+                                      />
+                                    </>
+                                  )}
+
+                                  {reservation.status ===
+                                    "CHECKED_IN" && (
+                                    <ReservationStatusAction
+                                      reservationId={
+                                        reservation.id
+                                      }
+                                      targetStatus="CHECKED_OUT"
+                                    />
+                                  )}
+                                </div>
+                              </td>
+                            </tr>
+                          ),
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Mobile cards */}
+                  <div className="space-y-3 p-4 md:hidden">
+                    {reservationRows.map(
+                      (reservation) => (
+                        <ReservationCard
+                          key={reservation.id}
+                          reservation={reservation}
+                          guests={guestOptions}
+                          rooms={roomOptions}
+                        />
+                      ),
+                    )}
+                  </div>
+                </>
+              )}
+            </ReservationResults>
+          </div>
         </ReservationFilterProvider>
       </div>
     </section>

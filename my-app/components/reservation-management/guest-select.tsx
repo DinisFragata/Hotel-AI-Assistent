@@ -1,7 +1,12 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Check, ChevronDown, Search } from "lucide-react";
+import {
+  Check,
+  ChevronDown,
+  Plus,
+  Search,
+} from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -25,6 +30,7 @@ type GuestSelectProps = {
   disabled?: boolean;
   placeholder?: string;
   hasError?: boolean;
+  onCreateGuest?: () => void;
 };
 
 export default function GuestSelect({
@@ -34,6 +40,7 @@ export default function GuestSelect({
   disabled = false,
   placeholder = "Select a guest",
   hasError = false,
+  onCreateGuest,
 }: GuestSelectProps) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -51,19 +58,33 @@ export default function GuestSelect({
 
     return guests.filter((guest) => {
       return (
-        guest.name.toLowerCase().includes(query) ||
-        guest.email?.toLowerCase().includes(query)
+        guest.name
+          .toLowerCase()
+          .includes(query) ||
+        guest.email
+          ?.toLowerCase()
+          .includes(query)
       );
     });
   }, [guests, search]);
 
-  function handleSelect(guestId: string) {
+  function handleSelect(
+    guestId: string,
+  ) {
     onValueChange(guestId);
     setSearch("");
     setOpen(false);
   }
 
-  function handleOpenChange(nextOpen: boolean) {
+  function handleCreateGuest() {
+    setSearch("");
+    setOpen(false);
+    onCreateGuest?.();
+  }
+
+  function handleOpenChange(
+    nextOpen: boolean,
+  ) {
     setOpen(nextOpen);
 
     if (!nextOpen) {
@@ -84,9 +105,11 @@ export default function GuestSelect({
             disabled={disabled}
             aria-invalid={hasError}
             className={cn(
-                "h-auto min-h-8 w-full justify-between gap-3 px-3 py-2 font-normal",
-                !selectedGuest && "text-muted-foreground",
-                hasError && "border-destructive",
+              "h-auto min-h-8 w-full cursor-pointer justify-between gap-3 px-3 py-2 font-normal",
+              !selectedGuest &&
+                "text-muted-foreground",
+              hasError &&
+                "border-destructive",
             )}
           />
         }
@@ -141,42 +164,64 @@ export default function GuestSelect({
             </p>
           ) : (
             <div className="space-y-0.5">
-              {filteredGuests.map((guest) => {
-                const isSelected = guest.id === value;
+              {filteredGuests.map(
+                (guest) => {
+                  const isSelected =
+                    guest.id === value;
 
-                return (
-                  <button
-                    key={guest.id}
-                    type="button"
-                    onClick={() => handleSelect(guest.id)}
-                    className={cn(
-                      "flex w-full items-center gap-3 rounded-lg px-2.5 py-2 text-left transition-colors",
-                      "hover:bg-muted",
-                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
-                      isSelected && "bg-muted",
-                    )}
-                  >
-                    <span className="min-w-0 flex-1">
-                      <span className="block truncate text-sm font-medium">
-                        {guest.name}
+                  return (
+                    <button
+                      key={guest.id}
+                      type="button"
+                      onClick={() =>
+                        handleSelect(
+                          guest.id,
+                        )
+                      }
+                      className={cn(
+                        "flex w-full cursor-pointer items-center gap-3 rounded-lg px-2.5 py-2 text-left transition-colors",
+                        "hover:bg-muted",
+                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
+                        isSelected &&
+                          "bg-muted",
+                      )}
+                    >
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-sm font-medium">
+                          {guest.name}
+                        </span>
+
+                        {guest.email && (
+                          <span className="block truncate text-xs text-muted-foreground">
+                            {guest.email}
+                          </span>
+                        )}
                       </span>
 
-                      {guest.email && (
-                        <span className="block truncate text-xs text-muted-foreground">
-                          {guest.email}
-                        </span>
+                      {isSelected && (
+                        <Check className="size-4 shrink-0 text-primary" />
                       )}
-                    </span>
-
-                    {isSelected && (
-                      <Check className="size-4 shrink-0 text-primary" />
-                    )}
-                  </button>
-                );
-              })}
+                    </button>
+                  );
+                },
+              )}
             </div>
           )}
         </div>
+
+        {onCreateGuest && (
+          <div className="mt-2 border-t border-white/10 pt-2">
+            <Button
+              type="button"
+              variant="ghost"
+              className="w-full cursor-pointer justify-start gap-2"
+              onClick={handleCreateGuest}
+            >
+              <Plus className="size-4 text-primary" />
+              Create new guest
+            </Button>
+          </div>
+        )}
       </PopoverContent>
     </Popover>
   );

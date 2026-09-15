@@ -29,13 +29,13 @@ export type MaintenanceMinAggregateOutputType = {
   title: string | null
   description: string | null
   status: $Enums.MaintenanceStatus | null
-  priority: $Enums.MaintenancePriority | null
-  dueDate: Date | null
+  createdAt: Date | null
+  completedAt: Date | null
   roomId: string | null
   assignedToId: string | null
-  createdAt: Date | null
+  dueDate: Date | null
+  priority: $Enums.MaintenancePriority | null
   updatedAt: Date | null
-  completedAt: Date | null
 }
 
 export type MaintenanceMaxAggregateOutputType = {
@@ -43,13 +43,13 @@ export type MaintenanceMaxAggregateOutputType = {
   title: string | null
   description: string | null
   status: $Enums.MaintenanceStatus | null
-  priority: $Enums.MaintenancePriority | null
-  dueDate: Date | null
+  createdAt: Date | null
+  completedAt: Date | null
   roomId: string | null
   assignedToId: string | null
-  createdAt: Date | null
+  dueDate: Date | null
+  priority: $Enums.MaintenancePriority | null
   updatedAt: Date | null
-  completedAt: Date | null
 }
 
 export type MaintenanceCountAggregateOutputType = {
@@ -57,13 +57,13 @@ export type MaintenanceCountAggregateOutputType = {
   title: number
   description: number
   status: number
-  priority: number
-  dueDate: number
+  createdAt: number
+  completedAt: number
   roomId: number
   assignedToId: number
-  createdAt: number
+  dueDate: number
+  priority: number
   updatedAt: number
-  completedAt: number
   _all: number
 }
 
@@ -73,13 +73,13 @@ export type MaintenanceMinAggregateInputType = {
   title?: true
   description?: true
   status?: true
-  priority?: true
-  dueDate?: true
+  createdAt?: true
+  completedAt?: true
   roomId?: true
   assignedToId?: true
-  createdAt?: true
+  dueDate?: true
+  priority?: true
   updatedAt?: true
-  completedAt?: true
 }
 
 export type MaintenanceMaxAggregateInputType = {
@@ -87,13 +87,13 @@ export type MaintenanceMaxAggregateInputType = {
   title?: true
   description?: true
   status?: true
-  priority?: true
-  dueDate?: true
+  createdAt?: true
+  completedAt?: true
   roomId?: true
   assignedToId?: true
-  createdAt?: true
+  dueDate?: true
+  priority?: true
   updatedAt?: true
-  completedAt?: true
 }
 
 export type MaintenanceCountAggregateInputType = {
@@ -101,13 +101,13 @@ export type MaintenanceCountAggregateInputType = {
   title?: true
   description?: true
   status?: true
-  priority?: true
-  dueDate?: true
+  createdAt?: true
+  completedAt?: true
   roomId?: true
   assignedToId?: true
-  createdAt?: true
+  dueDate?: true
+  priority?: true
   updatedAt?: true
-  completedAt?: true
   _all?: true
 }
 
@@ -188,13 +188,13 @@ export type MaintenanceGroupByOutputType = {
   title: string
   description: string | null
   status: $Enums.MaintenanceStatus
-  priority: $Enums.MaintenancePriority
-  dueDate: Date | null
+  createdAt: Date
+  completedAt: Date | null
   roomId: string | null
   assignedToId: string | null
-  createdAt: Date
+  dueDate: Date | null
+  priority: $Enums.MaintenancePriority
   updatedAt: Date
-  completedAt: Date | null
   _count: MaintenanceCountAggregateOutputType | null
   _min: MaintenanceMinAggregateOutputType | null
   _max: MaintenanceMaxAggregateOutputType | null
@@ -223,15 +223,15 @@ export type MaintenanceWhereInput = {
   title?: Prisma.StringFilter<"Maintenance"> | string
   description?: Prisma.StringNullableFilter<"Maintenance"> | string | null
   status?: Prisma.EnumMaintenanceStatusFilter<"Maintenance"> | $Enums.MaintenanceStatus
-  priority?: Prisma.EnumMaintenancePriorityFilter<"Maintenance"> | $Enums.MaintenancePriority
-  dueDate?: Prisma.DateTimeNullableFilter<"Maintenance"> | Date | string | null
+  createdAt?: Prisma.DateTimeFilter<"Maintenance"> | Date | string
+  completedAt?: Prisma.DateTimeNullableFilter<"Maintenance"> | Date | string | null
   roomId?: Prisma.StringNullableFilter<"Maintenance"> | string | null
   assignedToId?: Prisma.StringNullableFilter<"Maintenance"> | string | null
-  createdAt?: Prisma.DateTimeFilter<"Maintenance"> | Date | string
+  dueDate?: Prisma.DateTimeNullableFilter<"Maintenance"> | Date | string | null
+  priority?: Prisma.EnumMaintenancePriorityFilter<"Maintenance"> | $Enums.MaintenancePriority
   updatedAt?: Prisma.DateTimeFilter<"Maintenance"> | Date | string
-  completedAt?: Prisma.DateTimeNullableFilter<"Maintenance"> | Date | string | null
-  room?: Prisma.XOR<Prisma.RoomNullableScalarRelationFilter, Prisma.RoomWhereInput> | null
   assignedTo?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  room?: Prisma.XOR<Prisma.RoomNullableScalarRelationFilter, Prisma.RoomWhereInput> | null
   history?: Prisma.MaintenanceHistoryListRelationFilter
 }
 
@@ -240,15 +240,15 @@ export type MaintenanceOrderByWithRelationInput = {
   title?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
-  priority?: Prisma.SortOrder
-  dueDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  completedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   roomId?: Prisma.SortOrderInput | Prisma.SortOrder
   assignedToId?: Prisma.SortOrderInput | Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
+  dueDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  priority?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  completedAt?: Prisma.SortOrderInput | Prisma.SortOrder
-  room?: Prisma.RoomOrderByWithRelationInput
   assignedTo?: Prisma.UserOrderByWithRelationInput
+  room?: Prisma.RoomOrderByWithRelationInput
   history?: Prisma.MaintenanceHistoryOrderByRelationAggregateInput
 }
 
@@ -260,15 +260,15 @@ export type MaintenanceWhereUniqueInput = Prisma.AtLeast<{
   title?: Prisma.StringFilter<"Maintenance"> | string
   description?: Prisma.StringNullableFilter<"Maintenance"> | string | null
   status?: Prisma.EnumMaintenanceStatusFilter<"Maintenance"> | $Enums.MaintenanceStatus
-  priority?: Prisma.EnumMaintenancePriorityFilter<"Maintenance"> | $Enums.MaintenancePriority
-  dueDate?: Prisma.DateTimeNullableFilter<"Maintenance"> | Date | string | null
+  createdAt?: Prisma.DateTimeFilter<"Maintenance"> | Date | string
+  completedAt?: Prisma.DateTimeNullableFilter<"Maintenance"> | Date | string | null
   roomId?: Prisma.StringNullableFilter<"Maintenance"> | string | null
   assignedToId?: Prisma.StringNullableFilter<"Maintenance"> | string | null
-  createdAt?: Prisma.DateTimeFilter<"Maintenance"> | Date | string
+  dueDate?: Prisma.DateTimeNullableFilter<"Maintenance"> | Date | string | null
+  priority?: Prisma.EnumMaintenancePriorityFilter<"Maintenance"> | $Enums.MaintenancePriority
   updatedAt?: Prisma.DateTimeFilter<"Maintenance"> | Date | string
-  completedAt?: Prisma.DateTimeNullableFilter<"Maintenance"> | Date | string | null
-  room?: Prisma.XOR<Prisma.RoomNullableScalarRelationFilter, Prisma.RoomWhereInput> | null
   assignedTo?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  room?: Prisma.XOR<Prisma.RoomNullableScalarRelationFilter, Prisma.RoomWhereInput> | null
   history?: Prisma.MaintenanceHistoryListRelationFilter
 }, "id">
 
@@ -277,13 +277,13 @@ export type MaintenanceOrderByWithAggregationInput = {
   title?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
-  priority?: Prisma.SortOrder
-  dueDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  completedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   roomId?: Prisma.SortOrderInput | Prisma.SortOrder
   assignedToId?: Prisma.SortOrderInput | Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
+  dueDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  priority?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  completedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.MaintenanceCountOrderByAggregateInput
   _max?: Prisma.MaintenanceMaxOrderByAggregateInput
   _min?: Prisma.MaintenanceMinOrderByAggregateInput
@@ -297,13 +297,13 @@ export type MaintenanceScalarWhereWithAggregatesInput = {
   title?: Prisma.StringWithAggregatesFilter<"Maintenance"> | string
   description?: Prisma.StringNullableWithAggregatesFilter<"Maintenance"> | string | null
   status?: Prisma.EnumMaintenanceStatusWithAggregatesFilter<"Maintenance"> | $Enums.MaintenanceStatus
-  priority?: Prisma.EnumMaintenancePriorityWithAggregatesFilter<"Maintenance"> | $Enums.MaintenancePriority
-  dueDate?: Prisma.DateTimeNullableWithAggregatesFilter<"Maintenance"> | Date | string | null
+  createdAt?: Prisma.DateTimeWithAggregatesFilter<"Maintenance"> | Date | string
+  completedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Maintenance"> | Date | string | null
   roomId?: Prisma.StringNullableWithAggregatesFilter<"Maintenance"> | string | null
   assignedToId?: Prisma.StringNullableWithAggregatesFilter<"Maintenance"> | string | null
-  createdAt?: Prisma.DateTimeWithAggregatesFilter<"Maintenance"> | Date | string
+  dueDate?: Prisma.DateTimeNullableWithAggregatesFilter<"Maintenance"> | Date | string | null
+  priority?: Prisma.EnumMaintenancePriorityWithAggregatesFilter<"Maintenance"> | $Enums.MaintenancePriority
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Maintenance"> | Date | string
-  completedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Maintenance"> | Date | string | null
 }
 
 export type MaintenanceCreateInput = {
@@ -311,13 +311,13 @@ export type MaintenanceCreateInput = {
   title: string
   description?: string | null
   status?: $Enums.MaintenanceStatus
-  priority?: $Enums.MaintenancePriority
-  dueDate?: Date | string | null
   createdAt?: Date | string
-  updatedAt?: Date | string
   completedAt?: Date | string | null
-  room?: Prisma.RoomCreateNestedOneWithoutMaintenanceInput
+  dueDate?: Date | string | null
+  priority?: $Enums.MaintenancePriority
+  updatedAt?: Date | string
   assignedTo?: Prisma.UserCreateNestedOneWithoutMaintenanceAssignedInput
+  room?: Prisma.RoomCreateNestedOneWithoutMaintenanceInput
   history?: Prisma.MaintenanceHistoryCreateNestedManyWithoutMaintenanceInput
 }
 
@@ -326,13 +326,13 @@ export type MaintenanceUncheckedCreateInput = {
   title: string
   description?: string | null
   status?: $Enums.MaintenanceStatus
-  priority?: $Enums.MaintenancePriority
-  dueDate?: Date | string | null
+  createdAt?: Date | string
+  completedAt?: Date | string | null
   roomId?: string | null
   assignedToId?: string | null
-  createdAt?: Date | string
+  dueDate?: Date | string | null
+  priority?: $Enums.MaintenancePriority
   updatedAt?: Date | string
-  completedAt?: Date | string | null
   history?: Prisma.MaintenanceHistoryUncheckedCreateNestedManyWithoutMaintenanceInput
 }
 
@@ -341,13 +341,13 @@ export type MaintenanceUpdateInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumMaintenanceStatusFieldUpdateOperationsInput | $Enums.MaintenanceStatus
-  priority?: Prisma.EnumMaintenancePriorityFieldUpdateOperationsInput | $Enums.MaintenancePriority
-  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  room?: Prisma.RoomUpdateOneWithoutMaintenanceNestedInput
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  priority?: Prisma.EnumMaintenancePriorityFieldUpdateOperationsInput | $Enums.MaintenancePriority
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   assignedTo?: Prisma.UserUpdateOneWithoutMaintenanceAssignedNestedInput
+  room?: Prisma.RoomUpdateOneWithoutMaintenanceNestedInput
   history?: Prisma.MaintenanceHistoryUpdateManyWithoutMaintenanceNestedInput
 }
 
@@ -356,13 +356,13 @@ export type MaintenanceUncheckedUpdateInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumMaintenanceStatusFieldUpdateOperationsInput | $Enums.MaintenanceStatus
-  priority?: Prisma.EnumMaintenancePriorityFieldUpdateOperationsInput | $Enums.MaintenancePriority
-  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   roomId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   assignedToId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  priority?: Prisma.EnumMaintenancePriorityFieldUpdateOperationsInput | $Enums.MaintenancePriority
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   history?: Prisma.MaintenanceHistoryUncheckedUpdateManyWithoutMaintenanceNestedInput
 }
 
@@ -371,13 +371,13 @@ export type MaintenanceCreateManyInput = {
   title: string
   description?: string | null
   status?: $Enums.MaintenanceStatus
-  priority?: $Enums.MaintenancePriority
-  dueDate?: Date | string | null
+  createdAt?: Date | string
+  completedAt?: Date | string | null
   roomId?: string | null
   assignedToId?: string | null
-  createdAt?: Date | string
+  dueDate?: Date | string | null
+  priority?: $Enums.MaintenancePriority
   updatedAt?: Date | string
-  completedAt?: Date | string | null
 }
 
 export type MaintenanceUpdateManyMutationInput = {
@@ -385,11 +385,11 @@ export type MaintenanceUpdateManyMutationInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumMaintenanceStatusFieldUpdateOperationsInput | $Enums.MaintenanceStatus
-  priority?: Prisma.EnumMaintenancePriorityFieldUpdateOperationsInput | $Enums.MaintenancePriority
-  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  priority?: Prisma.EnumMaintenancePriorityFieldUpdateOperationsInput | $Enums.MaintenancePriority
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type MaintenanceUncheckedUpdateManyInput = {
@@ -397,13 +397,13 @@ export type MaintenanceUncheckedUpdateManyInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumMaintenanceStatusFieldUpdateOperationsInput | $Enums.MaintenanceStatus
-  priority?: Prisma.EnumMaintenancePriorityFieldUpdateOperationsInput | $Enums.MaintenancePriority
-  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   roomId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   assignedToId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  priority?: Prisma.EnumMaintenancePriorityFieldUpdateOperationsInput | $Enums.MaintenancePriority
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type MaintenanceListRelationFilter = {
@@ -421,13 +421,13 @@ export type MaintenanceCountOrderByAggregateInput = {
   title?: Prisma.SortOrder
   description?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  priority?: Prisma.SortOrder
-  dueDate?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  completedAt?: Prisma.SortOrder
   roomId?: Prisma.SortOrder
   assignedToId?: Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
+  dueDate?: Prisma.SortOrder
+  priority?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  completedAt?: Prisma.SortOrder
 }
 
 export type MaintenanceMaxOrderByAggregateInput = {
@@ -435,13 +435,13 @@ export type MaintenanceMaxOrderByAggregateInput = {
   title?: Prisma.SortOrder
   description?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  priority?: Prisma.SortOrder
-  dueDate?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  completedAt?: Prisma.SortOrder
   roomId?: Prisma.SortOrder
   assignedToId?: Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
+  dueDate?: Prisma.SortOrder
+  priority?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  completedAt?: Prisma.SortOrder
 }
 
 export type MaintenanceMinOrderByAggregateInput = {
@@ -449,13 +449,13 @@ export type MaintenanceMinOrderByAggregateInput = {
   title?: Prisma.SortOrder
   description?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  priority?: Prisma.SortOrder
-  dueDate?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  completedAt?: Prisma.SortOrder
   roomId?: Prisma.SortOrder
   assignedToId?: Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
+  dueDate?: Prisma.SortOrder
+  priority?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  completedAt?: Prisma.SortOrder
 }
 
 export type MaintenanceScalarRelationFilter = {
@@ -551,12 +551,12 @@ export type EnumMaintenanceStatusFieldUpdateOperationsInput = {
   set?: $Enums.MaintenanceStatus
 }
 
-export type EnumMaintenancePriorityFieldUpdateOperationsInput = {
-  set?: $Enums.MaintenancePriority
-}
-
 export type NullableDateTimeFieldUpdateOperationsInput = {
   set?: Date | string | null
+}
+
+export type EnumMaintenancePriorityFieldUpdateOperationsInput = {
+  set?: $Enums.MaintenancePriority
 }
 
 export type MaintenanceCreateNestedOneWithoutHistoryInput = {
@@ -578,11 +578,11 @@ export type MaintenanceCreateWithoutAssignedToInput = {
   title: string
   description?: string | null
   status?: $Enums.MaintenanceStatus
-  priority?: $Enums.MaintenancePriority
-  dueDate?: Date | string | null
   createdAt?: Date | string
-  updatedAt?: Date | string
   completedAt?: Date | string | null
+  dueDate?: Date | string | null
+  priority?: $Enums.MaintenancePriority
+  updatedAt?: Date | string
   room?: Prisma.RoomCreateNestedOneWithoutMaintenanceInput
   history?: Prisma.MaintenanceHistoryCreateNestedManyWithoutMaintenanceInput
 }
@@ -592,12 +592,12 @@ export type MaintenanceUncheckedCreateWithoutAssignedToInput = {
   title: string
   description?: string | null
   status?: $Enums.MaintenanceStatus
-  priority?: $Enums.MaintenancePriority
-  dueDate?: Date | string | null
-  roomId?: string | null
   createdAt?: Date | string
-  updatedAt?: Date | string
   completedAt?: Date | string | null
+  roomId?: string | null
+  dueDate?: Date | string | null
+  priority?: $Enums.MaintenancePriority
+  updatedAt?: Date | string
   history?: Prisma.MaintenanceHistoryUncheckedCreateNestedManyWithoutMaintenanceInput
 }
 
@@ -635,13 +635,13 @@ export type MaintenanceScalarWhereInput = {
   title?: Prisma.StringFilter<"Maintenance"> | string
   description?: Prisma.StringNullableFilter<"Maintenance"> | string | null
   status?: Prisma.EnumMaintenanceStatusFilter<"Maintenance"> | $Enums.MaintenanceStatus
-  priority?: Prisma.EnumMaintenancePriorityFilter<"Maintenance"> | $Enums.MaintenancePriority
-  dueDate?: Prisma.DateTimeNullableFilter<"Maintenance"> | Date | string | null
+  createdAt?: Prisma.DateTimeFilter<"Maintenance"> | Date | string
+  completedAt?: Prisma.DateTimeNullableFilter<"Maintenance"> | Date | string | null
   roomId?: Prisma.StringNullableFilter<"Maintenance"> | string | null
   assignedToId?: Prisma.StringNullableFilter<"Maintenance"> | string | null
-  createdAt?: Prisma.DateTimeFilter<"Maintenance"> | Date | string
+  dueDate?: Prisma.DateTimeNullableFilter<"Maintenance"> | Date | string | null
+  priority?: Prisma.EnumMaintenancePriorityFilter<"Maintenance"> | $Enums.MaintenancePriority
   updatedAt?: Prisma.DateTimeFilter<"Maintenance"> | Date | string
-  completedAt?: Prisma.DateTimeNullableFilter<"Maintenance"> | Date | string | null
 }
 
 export type MaintenanceCreateWithoutRoomInput = {
@@ -649,11 +649,11 @@ export type MaintenanceCreateWithoutRoomInput = {
   title: string
   description?: string | null
   status?: $Enums.MaintenanceStatus
-  priority?: $Enums.MaintenancePriority
-  dueDate?: Date | string | null
   createdAt?: Date | string
-  updatedAt?: Date | string
   completedAt?: Date | string | null
+  dueDate?: Date | string | null
+  priority?: $Enums.MaintenancePriority
+  updatedAt?: Date | string
   assignedTo?: Prisma.UserCreateNestedOneWithoutMaintenanceAssignedInput
   history?: Prisma.MaintenanceHistoryCreateNestedManyWithoutMaintenanceInput
 }
@@ -663,12 +663,12 @@ export type MaintenanceUncheckedCreateWithoutRoomInput = {
   title: string
   description?: string | null
   status?: $Enums.MaintenanceStatus
-  priority?: $Enums.MaintenancePriority
-  dueDate?: Date | string | null
-  assignedToId?: string | null
   createdAt?: Date | string
-  updatedAt?: Date | string
   completedAt?: Date | string | null
+  assignedToId?: string | null
+  dueDate?: Date | string | null
+  priority?: $Enums.MaintenancePriority
+  updatedAt?: Date | string
   history?: Prisma.MaintenanceHistoryUncheckedCreateNestedManyWithoutMaintenanceInput
 }
 
@@ -703,13 +703,13 @@ export type MaintenanceCreateWithoutHistoryInput = {
   title: string
   description?: string | null
   status?: $Enums.MaintenanceStatus
-  priority?: $Enums.MaintenancePriority
-  dueDate?: Date | string | null
   createdAt?: Date | string
-  updatedAt?: Date | string
   completedAt?: Date | string | null
-  room?: Prisma.RoomCreateNestedOneWithoutMaintenanceInput
+  dueDate?: Date | string | null
+  priority?: $Enums.MaintenancePriority
+  updatedAt?: Date | string
   assignedTo?: Prisma.UserCreateNestedOneWithoutMaintenanceAssignedInput
+  room?: Prisma.RoomCreateNestedOneWithoutMaintenanceInput
 }
 
 export type MaintenanceUncheckedCreateWithoutHistoryInput = {
@@ -717,13 +717,13 @@ export type MaintenanceUncheckedCreateWithoutHistoryInput = {
   title: string
   description?: string | null
   status?: $Enums.MaintenanceStatus
-  priority?: $Enums.MaintenancePriority
-  dueDate?: Date | string | null
+  createdAt?: Date | string
+  completedAt?: Date | string | null
   roomId?: string | null
   assignedToId?: string | null
-  createdAt?: Date | string
+  dueDate?: Date | string | null
+  priority?: $Enums.MaintenancePriority
   updatedAt?: Date | string
-  completedAt?: Date | string | null
 }
 
 export type MaintenanceCreateOrConnectWithoutHistoryInput = {
@@ -747,13 +747,13 @@ export type MaintenanceUpdateWithoutHistoryInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumMaintenanceStatusFieldUpdateOperationsInput | $Enums.MaintenanceStatus
-  priority?: Prisma.EnumMaintenancePriorityFieldUpdateOperationsInput | $Enums.MaintenancePriority
-  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  room?: Prisma.RoomUpdateOneWithoutMaintenanceNestedInput
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  priority?: Prisma.EnumMaintenancePriorityFieldUpdateOperationsInput | $Enums.MaintenancePriority
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   assignedTo?: Prisma.UserUpdateOneWithoutMaintenanceAssignedNestedInput
+  room?: Prisma.RoomUpdateOneWithoutMaintenanceNestedInput
 }
 
 export type MaintenanceUncheckedUpdateWithoutHistoryInput = {
@@ -761,13 +761,13 @@ export type MaintenanceUncheckedUpdateWithoutHistoryInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumMaintenanceStatusFieldUpdateOperationsInput | $Enums.MaintenanceStatus
-  priority?: Prisma.EnumMaintenancePriorityFieldUpdateOperationsInput | $Enums.MaintenancePriority
-  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   roomId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   assignedToId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  priority?: Prisma.EnumMaintenancePriorityFieldUpdateOperationsInput | $Enums.MaintenancePriority
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type MaintenanceCreateManyAssignedToInput = {
@@ -775,12 +775,12 @@ export type MaintenanceCreateManyAssignedToInput = {
   title: string
   description?: string | null
   status?: $Enums.MaintenanceStatus
-  priority?: $Enums.MaintenancePriority
-  dueDate?: Date | string | null
-  roomId?: string | null
   createdAt?: Date | string
-  updatedAt?: Date | string
   completedAt?: Date | string | null
+  roomId?: string | null
+  dueDate?: Date | string | null
+  priority?: $Enums.MaintenancePriority
+  updatedAt?: Date | string
 }
 
 export type MaintenanceUpdateWithoutAssignedToInput = {
@@ -788,11 +788,11 @@ export type MaintenanceUpdateWithoutAssignedToInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumMaintenanceStatusFieldUpdateOperationsInput | $Enums.MaintenanceStatus
-  priority?: Prisma.EnumMaintenancePriorityFieldUpdateOperationsInput | $Enums.MaintenancePriority
-  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  priority?: Prisma.EnumMaintenancePriorityFieldUpdateOperationsInput | $Enums.MaintenancePriority
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   room?: Prisma.RoomUpdateOneWithoutMaintenanceNestedInput
   history?: Prisma.MaintenanceHistoryUpdateManyWithoutMaintenanceNestedInput
 }
@@ -802,12 +802,12 @@ export type MaintenanceUncheckedUpdateWithoutAssignedToInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumMaintenanceStatusFieldUpdateOperationsInput | $Enums.MaintenanceStatus
-  priority?: Prisma.EnumMaintenancePriorityFieldUpdateOperationsInput | $Enums.MaintenancePriority
-  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  roomId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  roomId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  priority?: Prisma.EnumMaintenancePriorityFieldUpdateOperationsInput | $Enums.MaintenancePriority
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   history?: Prisma.MaintenanceHistoryUncheckedUpdateManyWithoutMaintenanceNestedInput
 }
 
@@ -816,12 +816,12 @@ export type MaintenanceUncheckedUpdateManyWithoutAssignedToInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumMaintenanceStatusFieldUpdateOperationsInput | $Enums.MaintenanceStatus
-  priority?: Prisma.EnumMaintenancePriorityFieldUpdateOperationsInput | $Enums.MaintenancePriority
-  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  roomId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  roomId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  priority?: Prisma.EnumMaintenancePriorityFieldUpdateOperationsInput | $Enums.MaintenancePriority
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type MaintenanceCreateManyRoomInput = {
@@ -829,12 +829,12 @@ export type MaintenanceCreateManyRoomInput = {
   title: string
   description?: string | null
   status?: $Enums.MaintenanceStatus
-  priority?: $Enums.MaintenancePriority
-  dueDate?: Date | string | null
-  assignedToId?: string | null
   createdAt?: Date | string
-  updatedAt?: Date | string
   completedAt?: Date | string | null
+  assignedToId?: string | null
+  dueDate?: Date | string | null
+  priority?: $Enums.MaintenancePriority
+  updatedAt?: Date | string
 }
 
 export type MaintenanceUpdateWithoutRoomInput = {
@@ -842,11 +842,11 @@ export type MaintenanceUpdateWithoutRoomInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumMaintenanceStatusFieldUpdateOperationsInput | $Enums.MaintenanceStatus
-  priority?: Prisma.EnumMaintenancePriorityFieldUpdateOperationsInput | $Enums.MaintenancePriority
-  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  priority?: Prisma.EnumMaintenancePriorityFieldUpdateOperationsInput | $Enums.MaintenancePriority
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   assignedTo?: Prisma.UserUpdateOneWithoutMaintenanceAssignedNestedInput
   history?: Prisma.MaintenanceHistoryUpdateManyWithoutMaintenanceNestedInput
 }
@@ -856,12 +856,12 @@ export type MaintenanceUncheckedUpdateWithoutRoomInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumMaintenanceStatusFieldUpdateOperationsInput | $Enums.MaintenanceStatus
-  priority?: Prisma.EnumMaintenancePriorityFieldUpdateOperationsInput | $Enums.MaintenancePriority
-  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  assignedToId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  assignedToId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  priority?: Prisma.EnumMaintenancePriorityFieldUpdateOperationsInput | $Enums.MaintenancePriority
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   history?: Prisma.MaintenanceHistoryUncheckedUpdateManyWithoutMaintenanceNestedInput
 }
 
@@ -870,12 +870,12 @@ export type MaintenanceUncheckedUpdateManyWithoutRoomInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumMaintenanceStatusFieldUpdateOperationsInput | $Enums.MaintenanceStatus
-  priority?: Prisma.EnumMaintenancePriorityFieldUpdateOperationsInput | $Enums.MaintenancePriority
-  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  assignedToId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  assignedToId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  priority?: Prisma.EnumMaintenancePriorityFieldUpdateOperationsInput | $Enums.MaintenancePriority
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 
@@ -914,15 +914,15 @@ export type MaintenanceSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   title?: boolean
   description?: boolean
   status?: boolean
-  priority?: boolean
-  dueDate?: boolean
+  createdAt?: boolean
+  completedAt?: boolean
   roomId?: boolean
   assignedToId?: boolean
-  createdAt?: boolean
+  dueDate?: boolean
+  priority?: boolean
   updatedAt?: boolean
-  completedAt?: boolean
-  room?: boolean | Prisma.Maintenance$roomArgs<ExtArgs>
   assignedTo?: boolean | Prisma.Maintenance$assignedToArgs<ExtArgs>
+  room?: boolean | Prisma.Maintenance$roomArgs<ExtArgs>
   history?: boolean | Prisma.Maintenance$historyArgs<ExtArgs>
   _count?: boolean | Prisma.MaintenanceCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["maintenance"]>
@@ -932,15 +932,15 @@ export type MaintenanceSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   title?: boolean
   description?: boolean
   status?: boolean
-  priority?: boolean
-  dueDate?: boolean
+  createdAt?: boolean
+  completedAt?: boolean
   roomId?: boolean
   assignedToId?: boolean
-  createdAt?: boolean
+  dueDate?: boolean
+  priority?: boolean
   updatedAt?: boolean
-  completedAt?: boolean
-  room?: boolean | Prisma.Maintenance$roomArgs<ExtArgs>
   assignedTo?: boolean | Prisma.Maintenance$assignedToArgs<ExtArgs>
+  room?: boolean | Prisma.Maintenance$roomArgs<ExtArgs>
 }, ExtArgs["result"]["maintenance"]>
 
 export type MaintenanceSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -948,15 +948,15 @@ export type MaintenanceSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   title?: boolean
   description?: boolean
   status?: boolean
-  priority?: boolean
-  dueDate?: boolean
+  createdAt?: boolean
+  completedAt?: boolean
   roomId?: boolean
   assignedToId?: boolean
-  createdAt?: boolean
+  dueDate?: boolean
+  priority?: boolean
   updatedAt?: boolean
-  completedAt?: boolean
-  room?: boolean | Prisma.Maintenance$roomArgs<ExtArgs>
   assignedTo?: boolean | Prisma.Maintenance$assignedToArgs<ExtArgs>
+  room?: boolean | Prisma.Maintenance$roomArgs<ExtArgs>
 }, ExtArgs["result"]["maintenance"]>
 
 export type MaintenanceSelectScalar = {
@@ -964,36 +964,36 @@ export type MaintenanceSelectScalar = {
   title?: boolean
   description?: boolean
   status?: boolean
-  priority?: boolean
-  dueDate?: boolean
+  createdAt?: boolean
+  completedAt?: boolean
   roomId?: boolean
   assignedToId?: boolean
-  createdAt?: boolean
+  dueDate?: boolean
+  priority?: boolean
   updatedAt?: boolean
-  completedAt?: boolean
 }
 
-export type MaintenanceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "description" | "status" | "priority" | "dueDate" | "roomId" | "assignedToId" | "createdAt" | "updatedAt" | "completedAt", ExtArgs["result"]["maintenance"]>
+export type MaintenanceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "description" | "status" | "createdAt" | "completedAt" | "roomId" | "assignedToId" | "dueDate" | "priority" | "updatedAt", ExtArgs["result"]["maintenance"]>
 export type MaintenanceInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  room?: boolean | Prisma.Maintenance$roomArgs<ExtArgs>
   assignedTo?: boolean | Prisma.Maintenance$assignedToArgs<ExtArgs>
+  room?: boolean | Prisma.Maintenance$roomArgs<ExtArgs>
   history?: boolean | Prisma.Maintenance$historyArgs<ExtArgs>
   _count?: boolean | Prisma.MaintenanceCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type MaintenanceIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  room?: boolean | Prisma.Maintenance$roomArgs<ExtArgs>
   assignedTo?: boolean | Prisma.Maintenance$assignedToArgs<ExtArgs>
+  room?: boolean | Prisma.Maintenance$roomArgs<ExtArgs>
 }
 export type MaintenanceIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  room?: boolean | Prisma.Maintenance$roomArgs<ExtArgs>
   assignedTo?: boolean | Prisma.Maintenance$assignedToArgs<ExtArgs>
+  room?: boolean | Prisma.Maintenance$roomArgs<ExtArgs>
 }
 
 export type $MaintenancePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Maintenance"
   objects: {
-    room: Prisma.$RoomPayload<ExtArgs> | null
     assignedTo: Prisma.$UserPayload<ExtArgs> | null
+    room: Prisma.$RoomPayload<ExtArgs> | null
     history: Prisma.$MaintenanceHistoryPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1001,13 +1001,13 @@ export type $MaintenancePayload<ExtArgs extends runtime.Types.Extensions.Interna
     title: string
     description: string | null
     status: $Enums.MaintenanceStatus
-    priority: $Enums.MaintenancePriority
-    dueDate: Date | null
+    createdAt: Date
+    completedAt: Date | null
     roomId: string | null
     assignedToId: string | null
-    createdAt: Date
+    dueDate: Date | null
+    priority: $Enums.MaintenancePriority
     updatedAt: Date
-    completedAt: Date | null
   }, ExtArgs["result"]["maintenance"]>
   composites: {}
 }
@@ -1402,8 +1402,8 @@ readonly fields: MaintenanceFieldRefs;
  */
 export interface Prisma__MaintenanceClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  room<T extends Prisma.Maintenance$roomArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Maintenance$roomArgs<ExtArgs>>): Prisma.Prisma__RoomClient<runtime.Types.Result.GetResult<Prisma.$RoomPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   assignedTo<T extends Prisma.Maintenance$assignedToArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Maintenance$assignedToArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  room<T extends Prisma.Maintenance$roomArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Maintenance$roomArgs<ExtArgs>>): Prisma.Prisma__RoomClient<runtime.Types.Result.GetResult<Prisma.$RoomPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   history<T extends Prisma.Maintenance$historyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Maintenance$historyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MaintenanceHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1438,13 +1438,13 @@ export interface MaintenanceFieldRefs {
   readonly title: Prisma.FieldRef<"Maintenance", 'String'>
   readonly description: Prisma.FieldRef<"Maintenance", 'String'>
   readonly status: Prisma.FieldRef<"Maintenance", 'MaintenanceStatus'>
-  readonly priority: Prisma.FieldRef<"Maintenance", 'MaintenancePriority'>
-  readonly dueDate: Prisma.FieldRef<"Maintenance", 'DateTime'>
+  readonly createdAt: Prisma.FieldRef<"Maintenance", 'DateTime'>
+  readonly completedAt: Prisma.FieldRef<"Maintenance", 'DateTime'>
   readonly roomId: Prisma.FieldRef<"Maintenance", 'String'>
   readonly assignedToId: Prisma.FieldRef<"Maintenance", 'String'>
-  readonly createdAt: Prisma.FieldRef<"Maintenance", 'DateTime'>
+  readonly dueDate: Prisma.FieldRef<"Maintenance", 'DateTime'>
+  readonly priority: Prisma.FieldRef<"Maintenance", 'MaintenancePriority'>
   readonly updatedAt: Prisma.FieldRef<"Maintenance", 'DateTime'>
-  readonly completedAt: Prisma.FieldRef<"Maintenance", 'DateTime'>
 }
     
 
@@ -1846,25 +1846,6 @@ export type MaintenanceDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.I
 }
 
 /**
- * Maintenance.room
- */
-export type Maintenance$roomArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Room
-   */
-  select?: Prisma.RoomSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Room
-   */
-  omit?: Prisma.RoomOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.RoomInclude<ExtArgs> | null
-  where?: Prisma.RoomWhereInput
-}
-
-/**
  * Maintenance.assignedTo
  */
 export type Maintenance$assignedToArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1881,6 +1862,25 @@ export type Maintenance$assignedToArgs<ExtArgs extends runtime.Types.Extensions.
    */
   include?: Prisma.UserInclude<ExtArgs> | null
   where?: Prisma.UserWhereInput
+}
+
+/**
+ * Maintenance.room
+ */
+export type Maintenance$roomArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Room
+   */
+  select?: Prisma.RoomSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Room
+   */
+  omit?: Prisma.RoomOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RoomInclude<ExtArgs> | null
+  where?: Prisma.RoomWhereInput
 }
 
 /**
