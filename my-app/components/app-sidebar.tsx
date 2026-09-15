@@ -7,6 +7,7 @@ import { useState } from "react";
 import {
   BarChart3,
   BedDouble,
+  BookUser,
   Bot,
   CalendarDays,
   Hammer,
@@ -42,6 +43,11 @@ const navigation = [
     label: "MAINTENANCE",
     href: "/maintenance",
     icon: Hammer,
+  },
+    {
+    label: "OPERATIONS",
+    href: "/operations",
+    icon: BookUser,
   },
   {
     label: "ANALYTICS",

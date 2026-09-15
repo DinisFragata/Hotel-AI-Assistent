@@ -58,18 +58,23 @@ model Reservation {
   roomId      String
   createdAt   DateTime          @default(now())
   updatedAt   DateTime          @updatedAt
-  guest       Guest             @relation(fields: [guestId], references: [id])
-  room        Room              @relation(fields: [roomId], references: [id])
+
+  guest      Guest       @relation(fields: [guestId], references: [id])
+  room       Room        @relation(fields: [roomId], references: [id])
+  operations Operation[]
 }
 
 model Operation {
-  id        String        @id @default(cuid())
-  type      OperationType
-  guestName String
-  time      DateTime
-  roomId    String
-  createdAt DateTime      @default(now())
-  room      Room          @relation(fields: [roomId], references: [id])
+  id            String        @id @default(cuid())
+  type          OperationType
+  guestName     String
+  time          DateTime
+  roomId        String
+  reservationId String?
+  createdAt     DateTime      @default(now())
+
+  room        Room         @relation(fields: [roomId], references: [id])
+  reservation Reservation? @relation(fields: [reservationId], references: [id])
 }
 
 model Maintenance {
