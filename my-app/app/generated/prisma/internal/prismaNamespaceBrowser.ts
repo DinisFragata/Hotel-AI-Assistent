@@ -139,6 +139,7 @@ export const OperationScalarFieldEnum = {
   guestName: 'guestName',
   time: 'time',
   roomId: 'roomId',
+  reservationId: 'reservationId',
   createdAt: 'createdAt'
 } as const
 
