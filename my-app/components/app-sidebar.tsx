@@ -7,11 +7,13 @@ import { useState } from "react";
 import {
   BarChart3,
   BedDouble,
+  BookUser,
   Bot,
   CalendarDays,
   Hammer,
   LayoutDashboard,
   Settings,
+  UsersRound,
   X,
   Menu,
 } from "lucide-react";
@@ -33,9 +35,19 @@ const navigation = [
     icon: CalendarDays,
   },
   {
+    label: "GUESTS",
+    href: "/guests",
+    icon: UsersRound,
+  },
+  {
     label: "MAINTENANCE",
     href: "/maintenance",
     icon: Hammer,
+  },
+    {
+    label: "OPERATIONS",
+    href: "/operations",
+    icon: BookUser,
   },
   {
     label: "ANALYTICS",
