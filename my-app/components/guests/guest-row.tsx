@@ -2,20 +2,12 @@
 
 import { useState } from "react";
 
-import GuestDetailsDialog from "@/components/guests/guest-details-dialog";
+import GuestDetailsDialog, {
+  type GuestDetails,
+} from "@/components/guests/guest-details-dialog";
 
 type GuestRowProps = {
-  guest: {
-    id: string;
-    firstName: string;
-    lastName: string;
-    email: string | null;
-    phone: string | null;
-    preferredLanguage: string | null;
-    preferredRoomType: string | null;
-    specialRequests: string | null;
-    reservationCount: number;
-  };
+  guest: GuestDetails;
 };
 
 export default function GuestRow({
