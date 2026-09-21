@@ -1,10 +1,10 @@
-# FRAGATA.OS
+# Hotel.Operations
 
 Plataforma de gestão hoteleira: reservas, quartos, hóspedes, manutenção e check-in/check-out num só painel.
 
 **Estado:** em desenvolvimento.
 
-![Dashboard do FRAGATA.OS](docs/screenshots/dashboard.png)
+![Dashboard do Hotel.Operations](docs/screenshots/dashboard.png)
 
 ## Demo
 
@@ -14,7 +14,7 @@ Todos os dados da demo são fictícios.
 
 ## Problema que resolve
 
-Numa equipa de hotel pequena, reservas, estado dos quartos, pedidos de manutenção e chegadas do dia costumam estar espalhados por folhas de cálculo e mensagens. O FRAGATA.OS junta tudo num painel e impede erros comuns: sobrepor reservas no mesmo quarto, fazer check-in num quarto que não está livre ou saltar passos no ciclo de uma reserva.
+Numa equipa de hotel pequena, reservas, estado dos quartos, pedidos de manutenção e chegadas do dia costumam estar espalhados por folhas de cálculo e mensagens. O Hotel.Operations junta tudo num painel e impede erros comuns: sobrepor reservas no mesmo quarto, fazer check-in num quarto que não está livre ou saltar passos no ciclo de uma reserva.
 
 Projeto de portfólio, ainda não testado com hotéis reais.
 
