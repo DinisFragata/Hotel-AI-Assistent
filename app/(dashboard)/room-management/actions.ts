@@ -266,7 +266,6 @@ export async function deleteRoom(
   formData: FormData,
 ): Promise<DeleteRoomState> {
   const roomId = formData.get("id");
-  console.log("DELETE START", roomId);
 
   if (typeof roomId !== "string" || !roomId) {
     return {
@@ -338,7 +337,6 @@ export async function deleteRoom(
         id: roomId,
       },
     });
-    console.log("DELETE SUCCESS", room.number);
 
     //revalidatePath("/room-management");
 

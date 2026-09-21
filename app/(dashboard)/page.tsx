@@ -170,6 +170,9 @@ function InsightAction({
   );
 }
 
+// Depende da base de dados e da data de hoje: tem de ser renderizada em cada pedido.
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   const {
     rooms,

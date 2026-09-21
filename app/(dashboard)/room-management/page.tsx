@@ -4,6 +4,9 @@ import RoomCreateDialog from "@/components/room-management/room-create-dialog";
 import RoomDeleteDialog from "@/components/room-management/room-delete-dialog";
 import RoomEditDialog from "@/components/room-management/room-edit-dialog";
 
+// Depende da base de dados e da data de hoje: tem de ser renderizada em cada pedido.
+export const dynamic = "force-dynamic";
+
 export default async function RoomManagementPage() {
   const rooms = await prisma.room.findMany({
     orderBy: {

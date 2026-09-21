@@ -1,6 +1,10 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import {
+  isValidReservationStatusTransition,
+  type ReservationStatus,
+} from "@/lib/reservations/status";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
@@ -94,40 +98,6 @@ export type UpdateReservationStatusState = {
   success: boolean;
   message: string;
 };
-
-type ReservationStatus =
-  | "PENDING"
-  | "CONFIRMED"
-  | "CHECKED_IN"
-  | "CHECKED_OUT"
-  | "CANCELLED";
-
-function isValidReservationStatusTransition(
-  currentStatus: ReservationStatus,
-  nextStatus: ReservationStatus,
-) {
-  if (currentStatus === nextStatus) {
-    return true;
-  }
-
-  const allowedTransitions: Record<
-    ReservationStatus,
-    readonly ReservationStatus[]
-  > = {
-    PENDING: ["CONFIRMED", "CANCELLED"],
-    CONFIRMED: [
-      "CHECKED_IN",
-      "CANCELLED",
-    ],
-    CHECKED_IN: ["CHECKED_OUT"],
-    CHECKED_OUT: [],
-    CANCELLED: [],
-  };
-
-  return allowedTransitions[currentStatus].includes(
-    nextStatus,
-  );
-}
 
 export async function createReservation(
   _previousState: CreateReservationState,

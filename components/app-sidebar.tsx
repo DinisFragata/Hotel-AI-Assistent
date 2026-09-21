@@ -12,7 +12,6 @@ import {
   CalendarDays,
   Hammer,
   LayoutDashboard,
-  Settings,
   UsersRound,
   X,
   Menu,
@@ -58,11 +57,6 @@ const navigation = [
     label: "AI ASSISTANT",
     href: "/ai-assistant",
     icon: Bot,
-  },
-  {
-    label: "SETTINGS",
-    href: "/settings",
-    icon: Settings,
   },
 ];
 
