@@ -1,7 +1,7 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
-import { type UIMessage } from "ai";
+import { DefaultChatTransport, type UIMessage } from "ai";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { AlertTriangle, Bot, CheckCircle2, MessageSquare, RotateCcw, Send, User, Wrench } from "lucide-react";
@@ -219,8 +219,13 @@ function MessageParts({ message, showCursor }: { message: UIMessage; showCursor:
 }
 
 
+// The basePath must be added manually: fetch() calls are not rewritten by Next.js
+const chatTransport = new DefaultChatTransport({
+  api: `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/api/chat`,
+});
+
 export default function AiAssistantChat() {
-  const { messages, sendMessage, setMessages, status, error, clearError } = useChat();
+  const { messages, sendMessage, setMessages, status, error, clearError } = useChat({ transport: chatTransport });
   const [input, setInput] = useState("");
 
   const bottomRef = useRef<HTMLDivElement>(null);
