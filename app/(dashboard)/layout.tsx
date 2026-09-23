@@ -1,19 +1,11 @@
 import AppSidebar from "@/components/app-sidebar";
+import CurrentDate from "@/components/current-date";
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const today = new Intl.DateTimeFormat("en-GB", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-  }).format(new Date());
-
-  const formattedDate =
-    today.charAt(0).toUpperCase() + today.slice(1);
-
   return (
     <main className="min-h-screen overflow-x-hidden bg-background text-foreground">
       <div className="pointer-events-none fixed left-[-10%] top-[-20%] z-0 h-[50%] w-[50%] rounded-full bg-primary/10 blur-[120px]" />
@@ -25,7 +17,7 @@ export default function DashboardLayout({
       <div className="md:pl-72">
         <header className="fixed left-0 right-0 top-0 z-40 flex h-20 items-center justify-end border-b border-white/10 bg-background/80 px-4 backdrop-blur-xl md:left-72 md:h-24 md:px-10">
           <div className="text-right text-sm font-semibold leading-[1.3] tracking-[-0.015em] sm:text-base md:text-[23px]">
-            {formattedDate}
+            <CurrentDate />
           </div>
         </header>
 
