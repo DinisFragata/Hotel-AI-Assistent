@@ -236,10 +236,10 @@ async function main() {
     { key: "amelia", room: "510", checkIn: at(-1, 14), checkOut: at(2, 12), guests: 3, status: ReservationStatus.CHECKED_IN },
     // Check-out feito hoje (o quarto 203 está em limpeza)
     { key: "harold", room: "203", checkIn: at(-3, 15), checkOut: at(0, 11), guests: 2, status: ReservationStatus.CHECKED_OUT },
-    // Próximas chegadas
-    { key: "arthur", room: "402", checkIn: at(1, 14), checkOut: at(4, 11), guests: 2, status: ReservationStatus.CONFIRMED },
+    // Próximas chegadas (a da 402 é hoje, referida nos AI insights)
+    { key: "arthur", room: "402", checkIn: at(0, 16), checkOut: at(3, 11), guests: 2, status: ReservationStatus.CONFIRMED },
     { key: "clara", room: "201", checkIn: at(2, 15), checkOut: at(5, 11), guests: 2, status: ReservationStatus.CONFIRMED },
-    { key: "james", room: "302", checkIn: at(5, 14), checkOut: at(8, 11), guests: 2, status: ReservationStatus.PENDING },
+    { key: "james", room: "205", checkIn: at(5, 14), checkOut: at(8, 11), guests: 2, status: ReservationStatus.PENDING },
   ];
 
   const reservationByKey: Record<string, string> = {};
