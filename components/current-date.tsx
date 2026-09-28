@@ -12,7 +12,7 @@ function formatDate(date: Date): string {
   const get = (type: Intl.DateTimeFormatPartTypes) =>
     parts.find((p) => p.type === type)?.value ?? "";
 
-  return `${get("weekday")}, ${get("day")} of ${get("month")} ${get("year")}`;
+  return `${get("weekday")}, ${get("day")} ${get("month")} ${get("year")}`;
 }
 
 // Re-check every minute so the date rolls over at midnight.

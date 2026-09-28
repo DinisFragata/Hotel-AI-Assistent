@@ -97,21 +97,23 @@ export default async function GuestsPage({
     <section className="relative min-h-screen px-4 pb-8 pt-6 sm:px-6 sm:pb-10 sm:pt-8 lg:px-10 lg:pt-10">
       <div className="mx-auto max-w-350">
         {/* Page header */}
-        <div className="mb-8 sm:mb-10">
-          <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">
-            Guest Management
-          </p>
+        <div className="mb-8 flex flex-col gap-6 sm:mb-10 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">
+              Guest Management
+            </p>
 
-          <h1 className="text-3xl font-semibold tracking-[-0.04em] sm:text-4xl lg:text-[42px]">
-            Guests
-          </h1>
+            <h1 className="text-3xl font-semibold tracking-[-0.04em] sm:text-4xl lg:text-[42px]">
+              Guests
+            </h1>
 
-          <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base sm:leading-[1.6]">
-            Manage guest profiles, contact information and
-            reservation history.
-          </p>
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base sm:leading-[1.6]">
+              Manage guest profiles, contact information and
+              reservation history.
+            </p>
+          </div>
 
-          <div className="mt-5">
+          <div className="w-full lg:w-auto">
             <CreateGuestDialog />
           </div>
         </div>

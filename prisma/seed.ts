@@ -156,8 +156,8 @@ async function main() {
     {
       key: "clara",
       firstName: "Clara",
-      lastName: "Bow",
-      email: "clara.bow@example.com",
+      lastName: "Whitfield",
+      email: "clara.whitfield@example.com",
       phone: "+1 202 555 0104",
       preferredLanguage: "English",
       preferredRoomType: "Double",

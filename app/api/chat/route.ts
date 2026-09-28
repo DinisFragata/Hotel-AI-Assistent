@@ -16,6 +16,15 @@ import {
   computeOperationsSummary,
   computeMaintenanceSummary,
 } from "@/lib/analytics/metrics";
+import { formatEuro } from "@/lib/utils";
+
+const PRIORITY_ORDER = ["URGENT", "HIGH", "MEDIUM", "LOW"];
+
+function formatDueDate(date: Date | null) {
+  return date
+    ? new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short" }).format(date)
+    : "no due date";
+}
 
 export const runtime = "nodejs";
 
@@ -40,6 +49,22 @@ export async function POST(req: Request) {
   const operationsSummary = computeOperationsSummary(operations);
   const maintenanceSummary = computeMaintenanceSummary(maintenance, periodStart);
 
+  const activeMaintenance = maintenance
+    .filter((m) => m.status === "OPEN" || m.status === "IN_PROGRESS")
+    .sort((a, b) => PRIORITY_ORDER.indexOf(a.priority) - PRIORITY_ORDER.indexOf(b.priority))
+    .map((m) => ({
+      title: m.title,
+      room: m.room?.number ?? null,
+      priority: m.priority,
+      status: m.status,
+      due: formatDueDate(m.dueDate),
+    }));
+  const highCount = maintenanceSummary.urgentOrHigh - maintenanceSummary.urgent;
+  const activeMaintenanceText =
+    activeMaintenance
+      .map((m) => `- [${m.priority}] ${m.title}${m.room ? ` (Room ${m.room})` : ""}: ${m.status}, due ${m.due}`)
+      .join("\n") || "- none";
+
   const roomsByStatus = rooms.reduce<Record<string, string[]>>((acc, r) => {
     (acc[r.status] ??= []).push(r.number);
     return acc;
@@ -58,19 +83,25 @@ ROOMS BY STATUS:
 ${roomListText}
 
 LAST 30 DAYS:
-- Revenue: €${revenue.total} (${revenue.count} qualifying reservations)
+- Revenue: ${formatEuro(revenue.total)} (${revenue.count} qualifying reservations)
 - Check-ins: ${operationsSummary.checkIns}, Check-outs: ${operationsSummary.checkOuts}
 - Active reservations (non-cancelled): ${reservationStats.count}
 - Avg length of stay: ${reservationStats.avgStayNights} nights
 
 MAINTENANCE:
-- Active requests: ${maintenanceSummary.active} (${maintenanceSummary.urgentOrHigh} urgent or high priority)
+- Active requests: ${maintenanceSummary.active} (${maintenanceSummary.urgent} urgent, ${highCount} high priority)
+- "Urgent" means URGENT priority only. Never add HIGH requests to the urgent count.
+ACTIVE REQUESTS (most urgent first):
+${activeMaintenanceText}
 - Completed in last 30 days: ${maintenanceSummary.completedInPeriod}
 
 FORMATTING RULES:
 Use ** around critical numbers and key metrics (e.g. **7 urgent** requests, **46%** occupancy).
 Use ## to introduce each major section (e.g. ## Occupancy, ## Maintenance, ## Revenue).
 Always use tools to show data visually — do not list numbers as plain text when a tool can show them better.
+Every reply MUST include written text that directly answers the question in 2–4 sentences; never reply with tool output only. When maintenance comes up, name the specific urgent and high-priority requests (title and room).
+Metric card descriptions must be unambiguous: "Total rooms" is "Rooms in the property" (not free rooms); use "Available rooms" for free rooms.
+Format money with thousands separators, e.g. €2,965.00.
 When someone asks which specific rooms have a given status, call showRoomList with those room numbers.
 For the initial operational summary: call showMetricCards first with the top KPIs, then showRoomStatusChart, then showMaintenanceSummary, then provide analytical commentary with insights and any recommendations.`;
 
@@ -108,18 +139,20 @@ For the initial operational summary: call showMetricCards first with the top KPI
         execute: async ({ rooms: roomsInput, title }) => ({ rooms: roomsInput, title }),
       }),
       showMaintenanceSummary: tool({
-        description: "Display a maintenance statistics summary card.",
+        description: "Display a maintenance summary card with counts and the list of active requests.",
         inputSchema: z.object({}),
         execute: async () => ({
           summary: {
             active: maintenanceSummary.active,
-            urgentOrHigh: maintenanceSummary.urgentOrHigh,
+            urgent: maintenanceSummary.urgent,
+            high: highCount,
             completedInPeriod: maintenanceSummary.completedInPeriod,
           },
+          items: activeMaintenance,
         }),
       }),
     },
-    stopWhen: isStepCount(5),
+    stopWhen: isStepCount(8),
   });
 
   return result.toUIMessageStreamResponse();

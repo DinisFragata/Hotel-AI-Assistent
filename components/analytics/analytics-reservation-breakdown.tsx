@@ -79,7 +79,7 @@ export default function AnalyticsReservationBreakdown({
                 <div key={key} className="flex items-center gap-3">
                   <span
                     className={cn(
-                      "w-24 shrink-0 rounded-full px-2.5 py-1 text-center text-[11px] font-semibold uppercase tracking-[0.1em]",
+                      "w-28 shrink-0 whitespace-nowrap rounded-full px-2.5 py-1 text-center text-[11px] font-semibold uppercase tracking-[0.1em]",
                       className,
                     )}
                   >

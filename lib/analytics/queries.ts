@@ -50,10 +50,13 @@ export async function getMaintenanceRecords(periodStart: Date) {
   return prisma.maintenance.findMany({
     select: {
       id: true,
+      title: true,
       status: true,
       priority: true,
+      dueDate: true,
       createdAt: true,
       completedAt: true,
+      room: { select: { number: true } },
     },
   });
 }

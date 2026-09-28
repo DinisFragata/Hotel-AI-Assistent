@@ -22,6 +22,8 @@ import {
   computeMaintenanceSummary,
 } from "@/lib/analytics/metrics";
 
+import { formatEuro } from "@/lib/utils";
+
 import AnalyticsPeriodSelector from "@/components/analytics/analytics-period-selector";
 import AnalyticsKpiCard from "@/components/analytics/analytics-kpi-card";
 import AnalyticsRoomStatusChart from "@/components/analytics/analytics-room-status-chart";
@@ -79,8 +81,8 @@ export default async function AnalyticsPage({
             </h1>
 
             <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base sm:leading-[1.6]">
-              Operational metrics derived from live hotel data.{" "}
-              {getPeriodLabel(period).toLowerCase()} period.
+              Operational metrics derived from live hotel data ·{" "}
+              {getPeriodLabel(period)}.
             </p>
           </div>
 
@@ -101,7 +103,7 @@ export default async function AnalyticsPage({
 
           <AnalyticsKpiCard
             label="Revenue"
-            value={`€${revenue.total}`}
+            value={formatEuro(revenue.total)}
             description={`${revenue.count} eligible reservations`}
           />
 

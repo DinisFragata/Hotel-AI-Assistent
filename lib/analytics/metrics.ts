@@ -165,8 +165,9 @@ export function computeOperationsTrend(
   // Build a day-keyed map: "YYYY-MM-DD" → { checkIns, checkOuts }
   const byDay: Record<string, { checkIns: number; checkOuts: number }> = {};
 
-  // Pre-fill every day in the range with zeros
-  for (let i = 0; i < days; i++) {
+  // Pre-fill every day in the range with zeros, ending today (periodStart is
+  // `days` days ago, so start the day after it).
+  for (let i = 1; i <= days; i++) {
     const d = new Date(periodStart);
     d.setDate(d.getDate() + i);
     const key = formatDay(d);
@@ -212,6 +213,8 @@ export function computeMaintenanceSummary(
     (m) => m.status === "OPEN" || m.status === "IN_PROGRESS",
   );
 
+  const urgent = active.filter((m) => m.priority === "URGENT").length;
+
   const urgentOrHigh = active.filter(
     (m) => m.priority === "URGENT" || m.priority === "HIGH",
   ).length;
@@ -225,6 +228,7 @@ export function computeMaintenanceSummary(
 
   return {
     active: active.length,
+    urgent,
     urgentOrHigh,
     completedInPeriod,
   };

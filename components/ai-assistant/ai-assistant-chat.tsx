@@ -32,9 +32,32 @@ type RoomListEntry = {
 
 type MaintenanceSummaryData = {
   active: number;
-  urgentOrHigh: number;
+  urgent: number;
+  high: number;
   completedInPeriod: number;
 };
+
+type MaintenanceItem = {
+  title: string;
+  room: string | null;
+  priority: string;
+  status: string;
+  due: string;
+};
+
+const PRIORITY_COLORS: Record<string, string> = {
+  URGENT: "border-destructive/20 bg-destructive/10 text-destructive",
+  HIGH: "border-amber-500/20 bg-amber-500/15 text-amber-400",
+  MEDIUM: "border-white/20 text-muted-foreground",
+  LOW: "border-white/20 text-muted-foreground",
+};
+
+const SUGGESTED_QUESTIONS = [
+  "Give me an operational summary for today.",
+  "Which rooms are available right now?",
+  "Are there any urgent maintenance issues?",
+  "How is revenue looking over the last 30 days?",
+];
 
 const STATUS_COLORS: Record<string, string> = {
   AVAILABLE: "bg-emerald-500/15 text-emerald-400 border-emerald-500/20",
@@ -188,28 +211,57 @@ function MessageParts({ message, showCursor }: { message: UIMessage; showCursor:
         </div>,
       );
     } else if (toolName === "showMaintenanceSummary") {
-      const { summary } = toolPart.output as { summary: MaintenanceSummaryData };
+      const { summary, items = [] } = toolPart.output as {
+        summary: MaintenanceSummaryData;
+        items?: MaintenanceItem[];
+      };
       nodes.push(
-        <div key={`maint-${i}`} className="mt-4 grid grid-cols-3 gap-3">
-          {(
-            [
-              { label: "Active", value: summary.active, Icon: Wrench, cls: "bg-white/5", textCls: "" },
-              {
-                label: "High priority",
-                value: summary.urgentOrHigh,
-                Icon: AlertTriangle,
-                cls: summary.urgentOrHigh > 0 ? "border border-destructive/20 bg-destructive/10" : "bg-white/5",
-                textCls: summary.urgentOrHigh > 0 ? "text-destructive" : "",
-              },
-              { label: "Completed", value: summary.completedInPeriod, Icon: CheckCircle2, cls: "bg-white/5", textCls: "text-primary" },
-            ] as const
-          ).map(({ label, value, Icon, cls, textCls }, j) => (
-            <div key={j} className={`rounded-2xl px-3 py-3 ${cls}`}>
-              <Icon className={`mb-1.5 size-3.5 ${textCls || "text-muted-foreground"}`} />
-              <p className={`text-xl font-semibold ${textCls}`}>{value}</p>
-              <p className="text-[10px] text-muted-foreground">{label}</p>
-            </div>
-          ))}
+        <div key={`maint-${i}`} className="mt-4 space-y-3">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {(
+              [
+                { label: "Active", value: summary.active, Icon: Wrench, cls: "bg-white/5", textCls: "" },
+                {
+                  label: "Urgent",
+                  value: summary.urgent,
+                  Icon: AlertTriangle,
+                  cls: summary.urgent > 0 ? "border border-destructive/20 bg-destructive/10" : "bg-white/5",
+                  textCls: summary.urgent > 0 ? "text-destructive" : "",
+                },
+                {
+                  label: "High priority",
+                  value: summary.high,
+                  Icon: AlertTriangle,
+                  cls: "bg-white/5",
+                  textCls: summary.high > 0 ? "text-amber-400" : "",
+                },
+                { label: "Completed (30d)", value: summary.completedInPeriod, Icon: CheckCircle2, cls: "bg-white/5", textCls: "text-primary" },
+              ] as const
+            ).map(({ label, value, Icon, cls, textCls }, j) => (
+              <div key={j} className={`rounded-2xl px-3 py-3 ${cls}`}>
+                <Icon className={`mb-1.5 size-3.5 ${textCls || "text-muted-foreground"}`} />
+                <p className={`text-xl font-semibold ${textCls}`}>{value}</p>
+                <p className="text-[10px] text-muted-foreground">{label}</p>
+              </div>
+            ))}
+          </div>
+
+          {items.length > 0 && (
+            <ul className="divide-y divide-white/10 rounded-2xl bg-white/5">
+              {items.map((item, j) => (
+                <li key={j} className="flex items-center gap-3 px-3 py-2.5 text-sm">
+                  <Badge variant="outline" className={`shrink-0 text-[10px] ${PRIORITY_COLORS[item.priority] ?? ""}`}>
+                    {item.priority}
+                  </Badge>
+                  <span className="min-w-0 flex-1 truncate">
+                    {item.title}
+                    {item.room && <span className="text-muted-foreground"> · Room {item.room}</span>}
+                  </span>
+                  <span className="shrink-0 text-xs text-muted-foreground">Due {item.due}</span>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>,
       );
     }
@@ -241,13 +293,17 @@ export default function AiAssistantChat() {
     setMessages([]);
   };
 
-  const handleSubmit = (e?: React.FormEvent) => {
-    e?.preventDefault();
-    const trimmed = input.trim();
+  const send = (text: string) => {
+    const trimmed = text.trim();
     if (!trimmed || isBusy) return;
     if (error) clearError();
     sendMessage({ text: trimmed });
     setInput("");
+  };
+
+  const handleSubmit = (e?: React.FormEvent) => {
+    e?.preventDefault();
+    send(input);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -271,8 +327,20 @@ export default function AiAssistantChat() {
             </div>
             <p className="text-base font-semibold">AI Assistant</p>
             <p className="max-w-sm text-sm text-muted-foreground">
-              Ask anything about occupancy, revenue, or maintenance below.
+              Ask anything about occupancy, revenue, or maintenance, or start with one of these:
             </p>
+            <div className="mt-2 flex max-w-lg flex-wrap justify-center gap-2">
+              {SUGGESTED_QUESTIONS.map((question) => (
+                <button
+                  key={question}
+                  type="button"
+                  onClick={() => send(question)}
+                  className="cursor-pointer rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:border-primary/30 hover:text-foreground"
+                >
+                  {question}
+                </button>
+              ))}
+            </div>
           </div>
         ) : (
           <div className="space-y-6">

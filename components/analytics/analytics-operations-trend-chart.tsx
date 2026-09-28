@@ -54,7 +54,7 @@ export default function AnalyticsOperationsTrendChart({
   const isEmpty = data.every((d) => d.checkIns === 0 && d.checkOuts === 0);
 
   return (
-    <div className="glass-surface overflow-hidden rounded-3xl">
+    <div className="glass-surface flex h-full flex-col overflow-hidden rounded-3xl">
       <div className="border-b border-white/10 px-6 py-5">
         <h2 className="text-lg font-semibold">Operations Trend</h2>
         <p className="mt-1 text-sm text-muted-foreground">
@@ -62,18 +62,18 @@ export default function AnalyticsOperationsTrendChart({
         </p>
       </div>
 
-      <div className="p-6">
+      <div className="flex flex-1 flex-col p-6">
         {isEmpty ? (
-          <div className="flex h-[220px] items-center justify-center">
+          <div className="flex min-h-[220px] flex-1 items-center justify-center">
             <p className="text-sm text-muted-foreground">
               No operations in this period.
             </p>
           </div>
         ) : (
-          <ChartContainer config={chartConfig} className="h-[220px] w-full">
+          <ChartContainer config={chartConfig} className="aspect-auto min-h-[220px] w-full flex-1">
             <BarChart
               data={data}
-              margin={{ top: 4, right: 0, left: -20, bottom: 0 }}
+              margin={{ top: 8, right: 20, left: 0, bottom: 0 }}
             >
               <CartesianGrid
                 vertical={false}
@@ -97,7 +97,7 @@ export default function AnalyticsOperationsTrendChart({
                 axisLine={false}
                 tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
                 allowDecimals={false}
-                width={32}
+                width={28}
               />
 
               <ChartTooltip

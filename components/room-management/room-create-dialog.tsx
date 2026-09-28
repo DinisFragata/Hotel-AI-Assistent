@@ -28,6 +28,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
+import { Plus } from "lucide-react";
 
 const initialState: CreateRoomState = {
   success: false,
@@ -59,7 +60,10 @@ export default function RoomCreateDialog() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={<Button />}>Add Room</DialogTrigger>
+      <DialogTrigger render={<Button />}>
+        <Plus />
+        Add Room
+      </DialogTrigger>
 
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
