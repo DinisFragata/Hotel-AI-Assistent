@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
@@ -25,6 +26,7 @@ export default function RootLayout({
         <div className="fixed inset-0 -z-10 soft-grid bg-subtle-pattern opacity-60" />
           {children}
         <Toaster />
+        <Analytics />
       </body>
     </html>
   );
